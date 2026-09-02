@@ -10,7 +10,7 @@
       "modified": 1777334400000,
       "created": 1777334400000,
       "name": "Kangaroo Campaign Advisor",
-      "description": "Requests for the local Campaign Advisor API.",
+      "description": "Requests for the local Campaign Advisor API. Responses use the success/message/data envelope.",
       "scope": "collection",
       "_type": "workspace"
     },

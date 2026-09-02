@@ -16,29 +16,35 @@ final class CampaignSimulationController extends Controller
     ) {
     }
 
-    public function simulate(SimulationRequest $request): SimulationResultResource|JsonResponse
+    public function simulate(SimulationRequest $request): JsonResponse
     {
         try {
-            return new SimulationResultResource(
+            $result = new SimulationResultResource(
                 $this->simulationService->simulateForMerchant($request->toCampaignDraft()),
             );
+
+            return $this->successResponse(
+                $result->resolve($request),
+                'Campaign simulation completed.',
+            );
         } catch (MerchantProfileNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], 404);
+            return $this->errorResponse($exception->getMessage(), 404);
         }
     }
 
-    public function scenarios(SimulationRequest $request): CampaignScenarioAnalysisResource|JsonResponse
+    public function scenarios(SimulationRequest $request): JsonResponse
     {
         try {
-            return new CampaignScenarioAnalysisResource(
+            $analysis = new CampaignScenarioAnalysisResource(
                 $this->simulationService->simulateScenariosForMerchant($request->toCampaignDraft()),
             );
+
+            return $this->successResponse(
+                $analysis->resolve($request),
+                'Campaign scenarios calculated.',
+            );
         } catch (MerchantProfileNotFoundException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], 404);
+            return $this->errorResponse($exception->getMessage(), 404);
         }
     }
 }

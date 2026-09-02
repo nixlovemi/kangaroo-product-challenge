@@ -8,12 +8,26 @@ use App\Domain\Campaigns\DTOs\PercentageDiscountParametersDTO;
 use App\Domain\Campaigns\Enums\CampaignType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Http\Traits\ApiResponseTrait;
 
 final class SimulationRequest extends FormRequest
 {
+    use ApiResponseTrait;
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException($this->errorResponse(
+            'The simulation request is invalid.',
+            422,
+            $validator->errors(),
+        ));
     }
 
     /**
