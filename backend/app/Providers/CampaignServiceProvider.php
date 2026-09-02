@@ -9,16 +9,27 @@ use App\Domain\Campaigns\Strategies\PercentageDiscountStrategy;
 use App\Domain\Campaigns\Strategies\DoublePointsStrategy;
 use App\Domain\Campaigns\Repositories\HistoricalDataRepository;
 use App\Infrastructure\Campaigns\Repositories\JsonHistoricalDataRepository;
+use App\Infrastructure\Campaigns\Repositories\CachedHistoricalDataRepository;
 use Illuminate\Support\ServiceProvider;
 
 final class CampaignServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(HistoricalDataRepository::class, function ($app) {
+        $this->app->singleton(JsonHistoricalDataRepository::class, function ($app) {
             return new JsonHistoricalDataRepository(
                 $app->make(\Illuminate\Filesystem\Filesystem::class),
                 base_path(config('campaigns.historical_data_path')),
+            );
+        });
+
+        // The provider selects the infrastructure source; replacing JSON with a database implementation keeps the domain and cache unchanged.
+        $this->app->singleton(HistoricalDataRepository::class, function ($app) {
+            return new CachedHistoricalDataRepository(
+                $app->make(JsonHistoricalDataRepository::class),
+                $app->make(\Illuminate\Contracts\Cache\Repository::class),
+                config('campaigns.historical_data_cache_ttl_minutes'),
+                config('campaigns.historical_data_version'),
             );
         });
 
