@@ -1,0 +1,196 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-09-02T00:00:00.000Z",
+  "__export_source": "kangaroo-campaign-advisor.local",
+  "resources": [
+    {
+      "_id": "wrk_kangaroo_campaign_advisor",
+      "parentId": null,
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Kangaroo Campaign Advisor",
+      "description": "Requests for the local Campaign Advisor API.",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_kangaroo_base",
+      "parentId": "wrk_kangaroo_campaign_advisor",
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://127.0.0.1:8000/api/v1",
+        "api_key": "kangaroo-local-demo-key"
+      },
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 0,
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_simulation",
+      "parentId": "wrk_kangaroo_campaign_advisor",
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Campaign Simulation",
+      "description": "Single simulation requests.",
+      "environment": {},
+      "metaSortKey": -1000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_scenarios",
+      "parentId": "wrk_kangaroo_campaign_advisor",
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Scenario Analysis",
+      "description": "Scenario requests for charts and comparisons.",
+      "environment": {},
+      "metaSortKey": -900,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_percentage_simulation",
+      "parentId": "fld_simulation",
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Simulate Percentage Discount",
+      "description": "Simulate a percentage discount campaign for merchant 101.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"merchant_id\": 101,\n  \"audience_size\": 1000,\n  \"fixed_campaign_cost\": 0,\n  \"campaign_type\": \"percentage_discount\",\n  \"parameters\": {\n    \"discount_percentage\": 10\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "X-API-Key",
+          "value": "{{ _.api_key }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "url": "{{ _.base_url }}/campaigns/simulate",
+      "_type": "request"
+    },
+    {
+      "_id": "req_points_simulation",
+      "parentId": "fld_simulation",
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Simulate Double Points",
+      "description": "Simulate a double points campaign for merchant 101.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"merchant_id\": 101,\n  \"audience_size\": 1000,\n  \"fixed_campaign_cost\": 0,\n  \"campaign_type\": \"double_points\",\n  \"parameters\": {\n    \"points_multiplier\": 2\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "X-API-Key",
+          "value": "{{ _.api_key }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "url": "{{ _.base_url }}/campaigns/simulate",
+      "_type": "request"
+    },
+    {
+      "_id": "req_percentage_scenarios",
+      "parentId": "fld_scenarios",
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Analyze Percentage Scenarios",
+      "description": "Return conservative, expected and strong response scenarios.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"merchant_id\": 101,\n  \"audience_size\": 1000,\n  \"fixed_campaign_cost\": 0,\n  \"campaign_type\": \"percentage_discount\",\n  \"parameters\": {\n    \"discount_percentage\": 10\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "X-API-Key",
+          "value": "{{ _.api_key }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "url": "{{ _.base_url }}/campaigns/simulate/scenarios",
+      "_type": "request"
+    },
+    {
+      "_id": "req_custom_scenarios",
+      "parentId": "fld_scenarios",
+      "modified": 1777334400000,
+      "created": 1777334400000,
+      "name": "Analyze Custom Scenario",
+      "description": "Return fixed scenarios plus a custom 8% conversion scenario.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"merchant_id\": 202,\n  \"audience_size\": 800,\n  \"fixed_campaign_cost\": 100,\n  \"campaign_type\": \"double_points\",\n  \"campaign_conversion_rate\": 8,\n  \"parameters\": {\n    \"points_multiplier\": 2\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "X-API-Key",
+          "value": "{{ _.api_key }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "url": "{{ _.base_url }}/campaigns/simulate/scenarios",
+      "_type": "request"
+    }
+  ]
+}

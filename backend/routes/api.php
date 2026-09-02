@@ -21,4 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->middleware(['throttle:60,1', 'api.key'])->group(function () {
     Route::post('campaigns/simulate', [CampaignSimulationController::class, 'simulate']);
+    Route::post('campaigns/simulate/scenarios', [CampaignSimulationController::class, 'scenarios']);
 });
