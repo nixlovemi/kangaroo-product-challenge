@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Providers;
+
+use App\Domain\Campaigns\Enums\CampaignType;
+use App\Domain\Campaigns\Services\CampaignSimulationService;
+use App\Domain\Campaigns\Services\CampaignSimulationStrategyFactory;
+use App\Domain\Campaigns\Strategies\PercentageDiscountStrategy;
+use Illuminate\Support\ServiceProvider;
+
+final class CampaignServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(CampaignSimulationStrategyFactory::class, function ($app) {
+            return new CampaignSimulationStrategyFactory([
+                CampaignType::PERCENTAGE_DISCOUNT->value => $app->make(PercentageDiscountStrategy::class),
+            ]);
+        });
+
+        $this->app->singleton(CampaignSimulationService::class);
+    }
+}
