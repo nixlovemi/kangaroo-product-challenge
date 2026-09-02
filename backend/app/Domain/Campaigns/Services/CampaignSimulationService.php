@@ -37,6 +37,9 @@ final class CampaignSimulationService
             fixedCampaignCost: $draft->fixedCampaignCost,
             parameters: $draft->parameters,
             campaignType: $draft->campaignType,
+            pointsEarnedPerCurrency: $profile->pointsEarnedPerCurrency,
+            pointsCostPerUnit: $profile->pointsCostPerUnit,
+            pointsRedemptionPercentage: $profile->pointsRedemptionPercentage,
         ));
     }
 

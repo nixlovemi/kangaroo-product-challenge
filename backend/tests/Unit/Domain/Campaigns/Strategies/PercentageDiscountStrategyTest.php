@@ -114,7 +114,7 @@ final class PercentageDiscountStrategyTest extends TestCase
         ));
 
         self::assertSame(0.0, $result->incrementalOrders);
-        self::assertSame(400.0, $result->discountCost);
+        self::assertSame(400.0, $result->incentiveCost);
         self::assertSame(-400.0, $result->netImpact);
         self::assertSame(-100.0, $result->roi);
         self::assertSame(HealthStatus::RISKY, $result->healthStatus);

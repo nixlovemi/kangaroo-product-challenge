@@ -7,7 +7,8 @@
         "historical_conversion_rate": 4.8,
         "historical_campaign_lift_percentage": 42,
         "points_cost_per_unit": 0.01,
-        "points_redemption_rate": 38
+        "points_redemption_percentage": 38,
+        "points_earned_per_currency": 10
     },
     "202": {
         "merchant_name": "Saint-Paul Market",
@@ -17,6 +18,7 @@
         "historical_conversion_rate": 3.1,
         "historical_campaign_lift_percentage": 18,
         "points_cost_per_unit": 0.012,
-        "points_redemption_rate": 54
+        "points_redemption_percentage": 54,
+        "points_earned_per_currency": 12
     }
 }

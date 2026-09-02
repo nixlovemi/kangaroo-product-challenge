@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Domain\Campaigns\DTOs\SimulationInputDTO;
+use App\Domain\Campaigns\DTOs\CampaignDraftDTO;
+use App\Domain\Campaigns\DTOs\DoublePointsParametersDTO;
+use App\Domain\Campaigns\Enums\CampaignType;
 use App\Domain\Campaigns\DTOs\PercentageDiscountParametersDTO;
 use App\Domain\Campaigns\Services\CampaignSimulationService;
 use Tests\TestCase;
@@ -24,5 +27,19 @@ final class CampaignServiceProviderTest extends TestCase
         ));
 
         self::assertSame(5500.0, $result->netImpact);
+    }
+
+    public function test_the_container_supports_double_points_with_merchant_history(): void
+    {
+        $result = $this->app->make(CampaignSimulationService::class)->simulateForMerchant(new CampaignDraftDTO(
+            merchantId: 101,
+            audienceSize: 1000,
+            fixedCampaignCost: 0,
+            parameters: new DoublePointsParametersDTO(),
+            campaignType: CampaignType::DOUBLE_POINTS,
+        ));
+
+        self::assertSame(177.42, $result->incentiveCost);
+        self::assertSame(623.54, $result->netImpact);
     }
 }

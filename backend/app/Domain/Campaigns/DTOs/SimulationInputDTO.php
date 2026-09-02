@@ -15,6 +15,9 @@ final class SimulationInputDTO
         public readonly float $fixedCampaignCost,
         public readonly CampaignParameters $parameters,
         public readonly CampaignType $campaignType = CampaignType::PERCENTAGE_DISCOUNT,
+        public readonly float $pointsEarnedPerCurrency = 1,
+        public readonly float $pointsCostPerUnit = 0.01,
+        public readonly float $pointsRedemptionPercentage = 40,
     ) {
     }
 }

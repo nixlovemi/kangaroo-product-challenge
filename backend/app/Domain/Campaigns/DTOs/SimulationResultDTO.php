@@ -11,7 +11,7 @@ final class SimulationResultDTO
         public readonly float $campaignOrders,
         public readonly float $incrementalOrders,
         public readonly float $incrementalRevenue,
-        public readonly float $discountCost,
+        public readonly float $incentiveCost,
         public readonly float $incrementalContribution,
         public readonly float $netImpact,
         public readonly float $breakEvenConversionRate,

@@ -36,7 +36,8 @@ final class JsonHistoricalDataRepository implements HistoricalDataRepository
             historicalConversionRate: (float) $profile['historical_conversion_rate'],
             historicalCampaignLiftPercentage: (float) $profile['historical_campaign_lift_percentage'],
             pointsCostPerUnit: (float) $profile['points_cost_per_unit'],
-            pointsRedemptionRate: (float) $profile['points_redemption_rate'],
+            pointsRedemptionPercentage: (float) $profile['points_redemption_percentage'],
+            pointsEarnedPerCurrency: (float) ($profile['points_earned_per_currency'] ?? 1),
         );
     }
 

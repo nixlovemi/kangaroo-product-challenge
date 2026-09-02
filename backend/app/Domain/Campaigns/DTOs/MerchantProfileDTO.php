@@ -13,7 +13,8 @@ final class MerchantProfileDTO
         public readonly float $historicalConversionRate,
         public readonly float $historicalCampaignLiftPercentage,
         public readonly float $pointsCostPerUnit,
-        public readonly float $pointsRedemptionRate,
+        public readonly float $pointsRedemptionPercentage,
+        public readonly float $pointsEarnedPerCurrency = 1,
     ) {
     }
 }

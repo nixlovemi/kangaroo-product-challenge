@@ -89,7 +89,7 @@ final class CampaignSimulationServiceTest extends TestCase
                     historicalConversionRate: 5,
                     historicalCampaignLiftPercentage: 20,
                     pointsCostPerUnit: 0.01,
-                    pointsRedemptionRate: 40,
+                    pointsRedemptionPercentage: 40,
                 );
             }
         });
