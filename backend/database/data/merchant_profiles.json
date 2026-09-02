@@ -1,0 +1,22 @@
+{
+    "101": {
+        "merchant_name": "Atelier Nord Cafe",
+        "currency": "CAD",
+        "average_order_value": 68.5,
+        "gross_margin_percentage": 58,
+        "historical_conversion_rate": 4.8,
+        "historical_campaign_lift_percentage": 42,
+        "points_cost_per_unit": 0.01,
+        "points_redemption_rate": 38
+    },
+    "202": {
+        "merchant_name": "Saint-Paul Market",
+        "currency": "CAD",
+        "average_order_value": 112,
+        "gross_margin_percentage": 34,
+        "historical_conversion_rate": 3.1,
+        "historical_campaign_lift_percentage": 18,
+        "points_cost_per_unit": 0.012,
+        "points_redemption_rate": 54
+    }
+}
