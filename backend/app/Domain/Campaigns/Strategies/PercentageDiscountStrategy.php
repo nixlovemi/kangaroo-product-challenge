@@ -3,7 +3,9 @@
 namespace App\Domain\Campaigns\Strategies;
 
 use App\Domain\Campaigns\DTOs\SimulationInputDTO;
+use App\Domain\Campaigns\DTOs\PercentageDiscountParametersDTO;
 use App\Domain\Campaigns\DTOs\SimulationResultDTO;
+use App\Domain\Campaigns\Exceptions\InvalidCampaignParametersException;
 use App\Domain\Campaigns\Enums\HealthStatus;
 
 final class PercentageDiscountStrategy implements CampaignSimulationStrategy
@@ -13,10 +15,16 @@ final class PercentageDiscountStrategy implements CampaignSimulationStrategy
 
     public function simulate(SimulationInputDTO $input): SimulationResultDTO
     {
+        $parameters = $input->parameters;
+
+        if (!$parameters instanceof PercentageDiscountParametersDTO) {
+            throw InvalidCampaignParametersException::for($input->campaignType);
+        }
+
         $marginRate = $this->percentageToRate($input->grossMarginPercentage);
         $historicalConversionRate = $this->percentageToRate($input->historicalConversionRate);
         $campaignConversionRate = $this->percentageToRate($input->campaignConversionRate);
-        $discountRate = $this->percentageToRate($input->discountPercentage);
+        $discountRate = $this->percentageToRate($parameters->discountPercentage);
 
         $baselineOrders = $this->calculateOrders($input->audienceSize, $historicalConversionRate);
         $campaignOrders = $this->calculateOrders($input->audienceSize, $campaignConversionRate);

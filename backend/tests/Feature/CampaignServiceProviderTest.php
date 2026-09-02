@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Domain\Campaigns\DTOs\SimulationInputDTO;
+use App\Domain\Campaigns\DTOs\PercentageDiscountParametersDTO;
 use App\Domain\Campaigns\Services\CampaignSimulationService;
 use Tests\TestCase;
 
@@ -18,8 +19,8 @@ final class CampaignServiceProviderTest extends TestCase
             grossMarginPercentage: 50,
             historicalConversionRate: 5,
             campaignConversionRate: 20,
-            discountPercentage: 10,
             fixedCampaignCost: 0,
+            parameters: new PercentageDiscountParametersDTO(10),
         ));
 
         self::assertSame(5500.0, $result->netImpact);

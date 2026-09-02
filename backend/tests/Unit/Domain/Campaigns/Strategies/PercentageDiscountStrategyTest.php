@@ -3,13 +3,31 @@
 namespace Tests\Unit\Domain\Campaigns\Strategies;
 
 use App\Domain\Campaigns\DTOs\SimulationInputDTO;
+use App\Domain\Campaigns\DTOs\DoublePointsParametersDTO;
+use App\Domain\Campaigns\DTOs\PercentageDiscountParametersDTO;
 use App\Domain\Campaigns\Enums\CampaignType;
+use App\Domain\Campaigns\Exceptions\InvalidCampaignParametersException;
 use App\Domain\Campaigns\Enums\HealthStatus;
 use App\Domain\Campaigns\Strategies\PercentageDiscountStrategy;
 use PHPUnit\Framework\TestCase;
 
 final class PercentageDiscountStrategyTest extends TestCase
 {
+    public function test_it_rejects_parameters_from_another_campaign_type(): void
+    {
+        $this->expectException(InvalidCampaignParametersException::class);
+
+        (new PercentageDiscountStrategy())->simulate(new SimulationInputDTO(
+            audienceSize: 1000,
+            averageOrderValue: 100,
+            grossMarginPercentage: 50,
+            historicalConversionRate: 5,
+            campaignConversionRate: 10,
+            fixedCampaignCost: 0,
+            parameters: new DoublePointsParametersDTO(),
+        ));
+    }
+
     public function test_it_separates_baseline_and_incremental_orders(): void
     {
         $result = (new PercentageDiscountStrategy())->simulate(new SimulationInputDTO(
@@ -18,8 +36,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 45,
             historicalConversionRate: 4.2,
             campaignConversionRate: 6.5,
-            discountPercentage: 15,
             fixedCampaignCost: 250,
+            parameters: new PercentageDiscountParametersDTO(15),
             campaignType: CampaignType::PERCENTAGE_DISCOUNT,
         ));
 
@@ -40,8 +58,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 20,
             historicalConversionRate: 5,
             campaignConversionRate: 10,
-            discountPercentage: 20,
             fixedCampaignCost: 100,
+            parameters: new PercentageDiscountParametersDTO(20),
         ));
 
         self::assertFalse($result->breakEvenAchievable);
@@ -57,8 +75,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 50,
             historicalConversionRate: 5,
             campaignConversionRate: 20,
-            discountPercentage: 10,
             fixedCampaignCost: 0,
+            parameters: new PercentageDiscountParametersDTO(10),
         ));
 
         self::assertSame(5500.0, $result->netImpact);
@@ -75,8 +93,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 50,
             historicalConversionRate: 5,
             campaignConversionRate: 7,
-            discountPercentage: 10,
             fixedCampaignCost: 0,
+            parameters: new PercentageDiscountParametersDTO(10),
         ));
 
         self::assertSame(300.0, $result->netImpact);
@@ -91,8 +109,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 50,
             historicalConversionRate: 5,
             campaignConversionRate: 4,
-            discountPercentage: 10,
             fixedCampaignCost: 0,
+            parameters: new PercentageDiscountParametersDTO(10),
         ));
 
         self::assertSame(0.0, $result->incrementalOrders);
@@ -110,8 +128,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 50,
             historicalConversionRate: 5,
             campaignConversionRate: 10,
-            discountPercentage: 0,
             fixedCampaignCost: 0,
+            parameters: new PercentageDiscountParametersDTO(0),
         ));
 
         self::assertNull($result->roi);
@@ -127,8 +145,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 20,
             historicalConversionRate: 5,
             campaignConversionRate: 10,
-            discountPercentage: 19.99,
             fixedCampaignCost: 0,
+            parameters: new PercentageDiscountParametersDTO(19.99),
         ));
 
         self::assertTrue($result->breakEvenAchievable);
@@ -142,8 +160,8 @@ final class PercentageDiscountStrategyTest extends TestCase
             grossMarginPercentage: 50,
             historicalConversionRate: 5,
             campaignConversionRate: 10,
-            discountPercentage: 10,
             fixedCampaignCost: 5000,
+            parameters: new PercentageDiscountParametersDTO(10),
         ));
 
         self::assertTrue($result->breakEvenAchievable);

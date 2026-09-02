@@ -4,17 +4,15 @@ namespace App\Domain\Campaigns\DTOs;
 
 use App\Domain\Campaigns\Enums\CampaignType;
 
-final class SimulationInputDTO
+final class CampaignDraftDTO
 {
     public function __construct(
+        public readonly int $merchantId,
         public readonly int $audienceSize,
-        public readonly float $averageOrderValue,
-        public readonly float $grossMarginPercentage,
-        public readonly float $historicalConversionRate,
-        public readonly float $campaignConversionRate,
         public readonly float $fixedCampaignCost,
         public readonly CampaignParameters $parameters,
         public readonly CampaignType $campaignType = CampaignType::PERCENTAGE_DISCOUNT,
+        public readonly ?float $campaignConversionRate = null,
     ) {
     }
 }
