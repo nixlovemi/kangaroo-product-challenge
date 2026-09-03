@@ -487,6 +487,43 @@ h3 {
   font-size: 0.78rem;
 }
 
+.summary-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 14px;
+}
+
+.summary-action p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.summary-action.is-positive p {
+  color: #15803d;
+}
+
+.summary-action__cta {
+  border: 1px solid #6366f1;
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.summary-action__cta:hover {
+  background: #e0e7ff;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.18s ease, transform 0.18s ease;

@@ -81,6 +81,20 @@ const driverMessage = computed(() => {
   return `Healthy: projected conversion (${projected}) is comfortably above the ${breakEven} break-even threshold.`;
 });
 
+// Tells the merchant exactly how much more is needed (or the safety margin already held) to break even.
+const actionMessage = computed(() => {
+  if (!activeScenario.value) return '';
+  const { incremental_orders, health_status } = activeScenario.value.result;
+  const rateGap = Math.round((activeScenario.value.result.break_even_conversion_rate - activeScenario.value.campaign_conversion_rate) * 100) / 100;
+  const ordersGap = Math.max(0, breakEvenIncrementalOrders.value - incremental_orders);
+
+  if (health_status === 'healthy' || rateGap <= 0) {
+    return `Already past break-even with room to spare — no changes needed to stay profitable.`;
+  }
+
+  return `Needs ${formatOrders(ordersGap)} more incremental orders (+${rateGap.toFixed(2)}pp conversion) to break even.`;
+});
+
 // Clarifies incremental orders vs. customers who would have ordered anyway.
 const ordersContextMessage = computed(() => {
   if (!activeScenario.value) return '';
@@ -425,6 +439,18 @@ function setCustomConversionRate(event: Event) {
             Projected conversion {{ formatPercentage(activeScenario.campaign_conversion_rate) }} vs
             break-even {{ formatPercentage(activeScenario.result.break_even_conversion_rate) }}
           </p>
+
+          <div class="summary-action" :class="{ 'is-positive': activeScenario.result.health_status === 'healthy' }">
+            <p>{{ actionMessage }}</p>
+            <button
+              v-if="activeScenario.result.health_status !== 'healthy'"
+              type="button"
+              class="summary-action__cta"
+              @click="emit('go-to-step', 'campaign')"
+            >
+              ✏️ Adjust campaign parameters
+            </button>
+          </div>
         </article>
       </transition>
 
@@ -498,7 +524,7 @@ function setCustomConversionRate(event: Event) {
       <p v-if="props.state.error" class="error-banner">{{ props.state.error }}</p>
 
       <div class="actions-row">
-        <button class="secondary-button" type="button" @click="emit('go-to-step', 'campaign')">Edit draft</button>
+        <button class="secondary-button" type="button" @click="emit('go-to-step', 'campaign')">Back</button>
         <button class="primary-button" type="button" @click="emit('go-to-step', 'review')">Continue to review</button>
       </div>
     </section>
