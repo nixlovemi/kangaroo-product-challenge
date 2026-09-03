@@ -46,7 +46,7 @@ abstract class AbstractCampaignSimulationStrategy implements CampaignSimulationS
 
     protected function percentageToRate(float $percentage): float
     {
-        return $percentage / 100;
+        return $this->round($percentage / 100);
     }
 
     protected function calculateOrders(int $audienceSize, float $conversionRate): float

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { CampaignType, MerchantAssumptions, MerchantInfo, ScenarioAnalysisData, ScenarioType, SimulationMetrics } from '../types/campaign';
 import { formatCurrency, formatInteger, formatPercentage, healthStatusLabel, healthStatusTone } from '../formatters/campaignFormatters';
 
@@ -32,7 +32,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'go-to-step', step: WizardStep): void;
   (event: 'analyze'): void;
-  (event: 'select-scenario', type: ScenarioType): void;
+  (event: 'select-scenario', type: ScenarioType | null): void;
   (event: 'reset'): void;
   (event: 'update:merchant', value: number): void;
   (event: 'update:audience', value: number): void;
@@ -46,6 +46,7 @@ const emit = defineEmits<{
 
 const currency = computed(() => props.analysis?.merchant.currency ?? 'CAD');
 const scenarios = computed(() => props.analysis?.scenarios ?? []);
+const customScenario = computed(() => scenarios.value.find(s => s.type === 'custom') || null);
 const activeScenario = computed(() => props.currentScenario);
 const activeTone = computed(() => activeScenario.value ? healthStatusTone(activeScenario.value.result.health_status) : 'warning');
 const activeHealthLabel = computed(() => activeScenario.value ? healthStatusLabel(activeScenario.value.result.health_status) : 'Pending');
@@ -56,6 +57,21 @@ const breakEvenProgress = computed(() => {
 });
 
 const isCustomScenario = computed(() => props.selectedScenario === 'custom');
+const isCustomModalOpen = ref(false);
+
+function handleSelectScenario(type: ScenarioType | null) {
+  if (type === 'custom') {
+    isCustomModalOpen.value = true;
+    emit('select-scenario', 'custom');
+  } else {
+    emit('select-scenario', type);
+  }
+}
+
+function handleCloseCustomModal() {
+  isCustomModalOpen.value = false;
+}
+
 
 const estimatedConversionRate = computed(() => {
   if (activeScenario.value) {
@@ -295,24 +311,24 @@ function setCustomConversionRate(event: Event) {
           type="button"
           class="segmented-control__option scenario-option scenario-option--custom"
           :class="{ 'is-active': isCustomScenario }"
-          @click="emit('select-scenario', 'custom')"
+          @click="handleSelectScenario('custom')"
         >
           <span class="segmented-control__text">
             <strong>Custom</strong>
             <small>{{ props.state.customConversionRate === null ? 'Enter a rate' : formatPercentage(props.state.customConversionRate) }}</small>
           </span>
-          <span class="segmented-control__value">✎</span>
+          <span class="segmented-control__value">{{ customScenario ? formatValue(customScenario.result.net_impact) : '✎' }}</span>
         </button>
       </div>
 
-      <div v-if="isCustomScenario" class="custom-dialog-backdrop" role="presentation">
+      <div v-if="isCustomModalOpen" class="custom-dialog-backdrop" role="presentation">
         <div class="custom-dialog" role="dialog" aria-modal="true" aria-label="Custom scenario">
           <div class="custom-dialog__head">
             <div>
               <p class="eyebrow">Custom scenario</p>
               <h3>Test a different audience response</h3>
             </div>
-            <button type="button" class="custom-dialog__close" @click="emit('select-scenario', 'expected')">×</button>
+            <button type="button" class="custom-dialog__close" @click="handleCloseCustomModal">×</button>
           </div>
 
           <label class="field">
@@ -332,8 +348,16 @@ function setCustomConversionRate(event: Event) {
 
           <div class="custom-dialog__actions">
             <button type="button" class="secondary-button" @click="emit('select-scenario', 'expected')">Cancel</button>
-            <button type="button" class="primary-button" @click="emit('apply-custom')">
-              Apply scenario
+            <button
+              type="button"
+              class="primary-button"
+              @click="async () => {
+                              await emit('apply-custom');
+                              emit('select-scenario', 'custom');
+                              handleCloseCustomModal();
+                            }"
+            >
+                Apply scenario
             </button>
           </div>
         </div>
@@ -484,8 +508,3 @@ function setCustomConversionRate(event: Event) {
     </section>
   </main>
 </template>
-
-
-
-
-

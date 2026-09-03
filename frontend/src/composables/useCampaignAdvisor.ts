@@ -37,11 +37,10 @@ export function useCampaignAdvisor() {
   }
 
   async function analyze() {
-    state.loading = true;
-    state.error = null;
+      state.loading = true;
+      state.error = null;
 
-    try {
-      state.analysis = await client.getScenarioAnalysis({
+      const payload = {
         merchant_id: state.merchantId,
         audience_size: state.audienceSize,
         fixed_campaign_cost: state.fixedCampaignCost,
@@ -50,18 +49,23 @@ export function useCampaignAdvisor() {
         parameters: state.campaignType === 'percentage_discount'
           ? { discount_percentage: state.discountPercentage }
           : { points_multiplier: state.pointsMultiplier },
-      });
-      state.step = 'analysis';
-    } catch (error) {
-      state.analysis = null;
-      state.error = error instanceof Error ? error.message : 'The campaign could not be analyzed.';
-    } finally {
-      state.loading = false;
+      };
+
+      console.log('Sending campaign analysis request with payload:', payload);
+
+      try {
+        state.analysis = await client.getScenarioAnalysis(payload);
+        state.step = 'analysis';
+      } catch (error) {
+        state.analysis = null;
+        state.error = error instanceof Error ? error.message : 'The campaign could not be analyzed.';
+      } finally {
+        state.loading = false;
+      }
     }
-  }
 
   function selectScenario(type: ScenarioType) {
-    selectedScenario.value = type;
+      selectedScenario.value = type;
   }
 
   function setCustomConversionRate(value: number | null) {
@@ -69,11 +73,13 @@ export function useCampaignAdvisor() {
   }
 
   async function applyCustomScenario() {
-    selectedScenario.value = 'custom';
-    await analyze();
-    state.step = 'analysis';
-    state.customConversionRate = null;
-  }
+      if(state.customConversionRate !== null) {
+        selectedScenario.value = 'custom';
+      }
+      await analyze();
+      // keep the step at analysis
+      state.step = 'analysis';
+    }
 
   function reset() {
     state.step = 'merchant';
