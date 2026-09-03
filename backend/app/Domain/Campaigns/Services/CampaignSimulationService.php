@@ -53,7 +53,7 @@ final class CampaignSimulationService
             );
         }
 
-        return new CampaignScenarioAnalysisDTO($profile, $scenarios);
+        return new CampaignScenarioAnalysisDTO($profile, $scenarios, $draft->fixedCampaignCost);
     }
 
     private function simulateScenario(
@@ -67,10 +67,11 @@ final class CampaignSimulationService
                 $profile->historicalConversionRate,
                 $profile->historicalCampaignLiftPercentage * $scenarioType->historicalLiftMultiplier(),
             );
+        $campaignConversionRate = round($campaignConversionRate, self::SCENARIO_RATE_PRECISION);
 
         return new ScenarioSimulationResultDTO(
             $scenarioType,
-            round($campaignConversionRate, self::SCENARIO_RATE_PRECISION),
+            $campaignConversionRate,
             $this->simulateWithProfile($draft, $profile, $campaignConversionRate),
         );
     }

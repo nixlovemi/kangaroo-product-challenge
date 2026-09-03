@@ -56,6 +56,38 @@ const breakEvenProgress = computed(() => {
   return Math.min(100, Math.max(0, ratio * 100));
 });
 
+// How many incremental orders (beyond baseline) are needed to reach the break-even conversion rate.
+const breakEvenIncrementalOrders = computed(() => {
+  if (!activeScenario.value) return 0;
+  const breakEvenTotalOrders = Math.round((activeScenario.value.result.break_even_conversion_rate / 100) * props.state.audienceSize);
+  return Math.max(0, breakEvenTotalOrders - activeScenario.value.result.baseline_orders);
+});
+
+// Plain-language explanation of why the scenario is healthy/caution/risky.
+const driverMessage = computed(() => {
+  if (!activeScenario.value) return '';
+  const { health_status } = activeScenario.value.result;
+  const projected = formatPercentage(activeScenario.value.campaign_conversion_rate);
+  const breakEven = formatPercentage(activeScenario.value.result.break_even_conversion_rate);
+
+  if (health_status === 'risky') {
+    return `Risky because the projected conversion (${projected}) is below the ${breakEven} needed to cover incentive and campaign costs.`;
+  }
+
+  if (health_status === 'caution') {
+    return `Projected to break even, but with little safety margin above the ${breakEven} conversion needed to cover costs.`;
+  }
+
+  return `Healthy: projected conversion (${projected}) is comfortably above the ${breakEven} break-even threshold.`;
+});
+
+// Clarifies incremental orders vs. customers who would have ordered anyway.
+const ordersContextMessage = computed(() => {
+  if (!activeScenario.value) return '';
+  const { baseline_orders, campaign_orders } = activeScenario.value.result;
+  return `${formatInteger(baseline_orders)} would order anyway · ${formatInteger(campaign_orders)} total with this campaign`;
+});
+
 const isCustomScenario = computed(() => props.selectedScenario === 'custom');
 const isCustomModalOpen = ref(false);
 
@@ -104,12 +136,6 @@ const scenarioCards = computed(() => scenarios.value.map((scenario) => ({
   ...scenario,
   label: scenario.type === 'strong_response' ? 'Strong response' : scenario.type.charAt(0).toUpperCase() + scenario.type.slice(1),
 })));
-
-const summaryMessage = computed(() => {
-  if (!activeScenario.value) return 'Run the analysis to see the recommendation.';
-  const scenario = activeScenario.value;
-  return `${healthStatusLabel(scenario.result.health_status)} · ${formatCurrency(scenario.result.net_impact, currency.value)} · ${formatOrders(scenario.result.incremental_orders)} incremental orders`;
-});
 
 function formatValue(value: number | null): string {
   return value === null ? '—' : formatCurrency(value, currency.value);
@@ -368,56 +394,71 @@ function setCustomConversionRate(event: Event) {
       </p>
 
       <transition name="fade" mode="out-in">
-        <div v-if="activeScenario" :key="activeScenario.type" class="analysis-grid">
-          <article class="summary-card" :class="`is-${activeTone}`">
-            <div class="summary-card__head">
-              <span class="summary-label">{{ activeHealthLabel }}</span>
-              <span class="summary-tag">Scenario result</span>
-            </div>
-            <h2>{{ formatValue(activeScenario.result.net_impact) }}</h2>
-            <p>{{ summaryMessage }}</p>
-            <div class="progress-track" aria-label="Break-even progress">
-              <div class="progress-fill" :style="{ width: `${breakEvenProgress}%` }" />
-            </div>
-            <p class="hint">
-              Historical conversion {{ assumptions ? formatPercentage(assumptions.historical_conversion_rate) : '—' }} vs
-              break-even {{ formatPercentage(activeScenario.result.break_even_conversion_rate) }}
-            </p>
-          </article>
+        <article v-if="activeScenario" :key="activeScenario.type" class="summary-card summary-card--full" :class="`is-${activeTone}`">
+          <div class="summary-card__head">
+            <span class="summary-label">{{ activeHealthLabel }}</span>
+            <span class="summary-tag">Scenario result</span>
+          </div>
 
-          <article class="panel-card">
-            <header class="section-header">
-              <div>
-                <p class="eyebrow">Merchant assumptions</p>
-                <h3>{{ merchant?.name ?? 'Merchant profile' }}</h3>
-              </div>
-            </header>
+          <h2>{{ formatValue(activeScenario.result.net_impact) }}</h2>
+          <p class="summary-subtitle">Estimated profit or loss if this scenario plays out as projected</p>
 
-            <div class="metrics-grid">
-              <div class="metric-card">
-                <span>Average order value</span>
-                <strong>{{ assumptions ? formatValue(assumptions.average_order_value) : '—' }}</strong>
-              </div>
-              <div class="metric-card">
-                <span>Gross margin</span>
-                <strong>{{ assumptions ? formatPercentage(assumptions.gross_margin_percentage) : '—' }}</strong>
-              </div>
-              <div class="metric-card">
-                <span>Historical conversion</span>
-                <strong>{{ assumptions ? formatPercentage(assumptions.historical_conversion_rate) : '—' }}</strong>
-              </div>
-              <div class="metric-card">
-                <span>Historical lift</span>
-                <strong>{{ assumptions ? formatPercentage(assumptions.historical_campaign_lift_percentage) : '—' }}</strong>
-              </div>
+          <p class="summary-driver">{{ driverMessage }}</p>
+
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <span>Incremental orders</span>
+              <strong>{{ formatOrders(activeScenario.result.incremental_orders) }}</strong>
+              <small>{{ ordersContextMessage }}</small>
             </div>
+            <div class="summary-stat">
+              <span>Orders needed to break even</span>
+              <strong>{{ formatOrders(breakEvenIncrementalOrders) }} incremental</strong>
+              <small>{{ formatPercentage(activeScenario.result.break_even_conversion_rate) }} of audience total</small>
+            </div>
+          </div>
 
-            <p class="hint-card">
-              Historical data is used to estimate the incremental share of the campaign response. The field above shows total campaign conversion; the incremental orders are derived from the merchant's baseline activity.
-            </p>
-          </article>
-        </div>
+          <div class="progress-track" aria-label="Break-even progress">
+            <div class="progress-fill" :style="{ width: `${breakEvenProgress}%` }" />
+          </div>
+          <p class="hint">
+            Projected conversion {{ formatPercentage(activeScenario.campaign_conversion_rate) }} vs
+            break-even {{ formatPercentage(activeScenario.result.break_even_conversion_rate) }}
+          </p>
+        </article>
       </transition>
+
+      <details class="accordion">
+        <summary class="accordion__summary">
+          <span class="eyebrow">Merchant assumptions</span>
+          <h3>{{ merchant?.name ?? 'Merchant profile' }}</h3>
+        </summary>
+
+        <div class="accordion__body">
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span>Average order value</span>
+              <strong>{{ assumptions ? formatValue(assumptions.average_order_value) : '—' }}</strong>
+            </div>
+            <div class="metric-card">
+              <span>Gross margin</span>
+              <strong>{{ assumptions ? formatPercentage(assumptions.gross_margin_percentage) : '—' }}</strong>
+            </div>
+            <div class="metric-card">
+              <span>Historical conversion</span>
+              <strong>{{ assumptions ? formatPercentage(assumptions.historical_conversion_rate) : '—' }}</strong>
+            </div>
+            <div class="metric-card">
+              <span>Historical lift</span>
+              <strong>{{ assumptions ? formatPercentage(assumptions.historical_campaign_lift_percentage) : '—' }}</strong>
+            </div>
+          </div>
+
+          <p class="hint-card">
+            Historical data is used to estimate the incremental share of the campaign response. The field above shows total campaign conversion; the incremental orders are derived from the merchant's baseline activity.
+          </p>
+        </div>
+      </details>
 
       <div class="insight-grid">
         <div class="insight-card">

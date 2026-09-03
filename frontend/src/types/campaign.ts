@@ -55,6 +55,7 @@ export interface ScenarioAnalysis {
 export interface ScenarioAnalysisData {
   merchant: MerchantInfo;
   assumptions: MerchantAssumptions;
+  fixed_campaign_cost: number;
   scenarios: ScenarioAnalysis[];
 }
 

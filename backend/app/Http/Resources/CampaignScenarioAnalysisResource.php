@@ -23,6 +23,7 @@ final class CampaignScenarioAnalysisResource extends JsonResource
                 'historical_conversion_rate' => $this->merchantProfile->historicalConversionRate,
                 'historical_campaign_lift_percentage' => $this->merchantProfile->historicalCampaignLiftPercentage,
             ],
+            'fixed_campaign_cost' => $this->fixedCampaignCost,
             'scenarios' => array_map(
                 fn ($scenario): array => [
                     'type' => $scenario->scenarioType->value,

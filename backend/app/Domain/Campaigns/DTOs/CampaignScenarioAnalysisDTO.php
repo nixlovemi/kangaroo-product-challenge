@@ -10,6 +10,7 @@ final class CampaignScenarioAnalysisDTO
     public function __construct(
         public readonly MerchantProfileDTO $merchantProfile,
         public readonly array $scenarios,
+        public readonly float $fixedCampaignCost,
     ) {
     }
 }
