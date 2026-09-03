@@ -41,6 +41,7 @@ const emit = defineEmits<{
   (event: 'update:discount', value: number): void;
   (event: 'update:multiplier', value: number): void;
   (event: 'update:custom', value: number | null): void;
+  (event: 'apply-custom'): void;
 }>();
 
 const currency = computed(() => props.analysis?.merchant.currency ?? 'CAD');
@@ -53,6 +54,8 @@ const breakEvenProgress = computed(() => {
   const ratio = activeScenario.value.campaign_conversion_rate / Math.max(activeScenario.value.result.break_even_conversion_rate, 0.01);
   return Math.min(100, Math.max(0, ratio * 100));
 });
+
+const isCustomScenario = computed(() => props.selectedScenario === 'custom');
 
 const estimatedConversionRate = computed(() => {
   if (activeScenario.value) {
@@ -272,72 +275,127 @@ function setCustomConversionRate(event: Event) {
         <p>Compare realistic outcomes and choose the safest launch condition.</p>
       </div>
 
-      <div class="analysis-grid">
-        <article class="summary-card" :class="`is-${activeTone}`">
-          <span class="summary-label">{{ activeHealthLabel }}</span>
-          <h2>{{ activeScenario ? formatValue(activeScenario.result.net_impact) : '—' }}</h2>
-          <p>{{ summaryMessage }}</p>
-          <div class="progress-track" aria-label="Break-even progress">
-            <div class="progress-fill" :style="{ width: `${breakEvenProgress}%` }" />
-          </div>
-          <p class="hint">Break-even conversion: {{ activeScenario ? formatPercentage(activeScenario.result.break_even_conversion_rate) : '—' }}</p>
-        </article>
+      <div class="segmented-control segmented-control--scenarios" role="tablist" aria-label="Scenarios">
+        <button
+          v-for="scenario in scenarioCards.filter((scenario) => scenario.type !== 'custom')"
+          :key="scenario.type"
+          type="button"
+          class="segmented-control__option scenario-option"
+          :class="{ 'is-active': scenario.type === selectedScenario }"
+          @click="emit('select-scenario', scenario.type)"
+        >
+          <span class="segmented-control__text">
+            <strong>{{ scenario.label }}</strong>
+            <small>{{ formatPercentage(scenario.campaign_conversion_rate) }}</small>
+          </span>
+          <span class="segmented-control__value">{{ formatValue(scenario.result.net_impact) }}</span>
+        </button>
 
-        <article class="panel-card">
-          <header class="section-header">
-            <div>
-              <p class="eyebrow">Merchant assumptions</p>
-              <h3>{{ merchant?.name ?? 'Merchant profile' }}</h3>
-            </div>
-          </header>
-
-          <div class="metrics-grid">
-            <div class="metric-card">
-              <span>Average order value</span>
-              <strong>{{ assumptions ? formatValue(assumptions.average_order_value) : '—' }}</strong>
-            </div>
-            <div class="metric-card">
-              <span>Gross margin</span>
-              <strong>{{ assumptions ? formatPercentage(assumptions.gross_margin_percentage) : '—' }}</strong>
-            </div>
-            <div class="metric-card">
-              <span>Historical conversion</span>
-              <strong>{{ assumptions ? formatPercentage(assumptions.historical_conversion_rate) : '—' }}</strong>
-            </div>
-            <div class="metric-card">
-              <span>Historical lift</span>
-              <strong>{{ assumptions ? formatPercentage(assumptions.historical_campaign_lift_percentage) : '—' }}</strong>
-            </div>
-          </div>
-
-          <p class="hint-card">
-            Historical data is used to estimate the incremental share of the campaign response. The field above shows total campaign conversion; the incremental orders are derived from the merchant's baseline activity.
-          </p>
-
-          <div class="scenario-list">
-            <button
-              v-for="scenario in scenarioCards"
-              :key="scenario.type"
-              type="button"
-              class="scenario-card"
-              :class="{ 'is-active': scenario.type === selectedScenario }"
-              @click="emit('select-scenario', scenario.type)"
-            >
-              <div class="scenario-card__meta">
-                <span class="scenario-type">{{ scenario.label }}</span>
-                <strong>{{ formatPercentage(scenario.campaign_conversion_rate) }}</strong>
-              </div>
-              <small>{{ formatValue(scenario.result.net_impact) }}</small>
-            </button>
-          </div>
-        </article>
+        <button
+          type="button"
+          class="segmented-control__option scenario-option scenario-option--custom"
+          :class="{ 'is-active': isCustomScenario }"
+          @click="emit('select-scenario', 'custom')"
+        >
+          <span class="segmented-control__text">
+            <strong>Custom</strong>
+            <small>{{ props.state.customConversionRate === null ? 'Enter a rate' : formatPercentage(props.state.customConversionRate) }}</small>
+          </span>
+          <span class="segmented-control__value">✎</span>
+        </button>
       </div>
 
-      <div class="insight-grid">
-        <div class="insight-card">
-          <span>Break-even conversion</span>
-          <strong>{{ activeScenario ? formatPercentage(activeScenario.result.break_even_conversion_rate) : '—' }}</strong>
+      <div v-if="isCustomScenario" class="custom-dialog-backdrop" role="presentation">
+        <div class="custom-dialog" role="dialog" aria-modal="true" aria-label="Custom scenario">
+          <div class="custom-dialog__head">
+            <div>
+              <p class="eyebrow">Custom scenario</p>
+              <h3>Test a different audience response</h3>
+            </div>
+            <button type="button" class="custom-dialog__close" @click="emit('select-scenario', 'expected')">×</button>
+          </div>
+
+          <label class="field">
+            <span>Total campaign conversion rate</span>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              class="custom-dialog__input"
+              :value="props.state.customConversionRate ?? ''"
+              @input="setCustomConversionRate"
+              placeholder="Enter a custom conversion"
+            >
+            <small>This is the total campaign response for the scenario. The backend calculates the incremental orders from the merchant's historical data.</small>
+          </label>
+
+          <div class="custom-dialog__actions">
+            <button type="button" class="secondary-button" @click="emit('select-scenario', 'expected')">Cancel</button>
+            <button type="button" class="primary-button" @click="emit('apply-custom')">
+              Apply scenario
+            </button>
+          </div>
         </div>
+      </div>
+
+      <p class="field-hint">
+        Each percentage represents the total campaign response for that scenario. Conservative uses 50% of the historical lift, expected uses 100%, strong response uses 150%, and custom lets the merchant test a different audience response.
+      </p>
+
+      <transition name="fade" mode="out-in">
+        <div v-if="activeScenario" :key="activeScenario.type" class="analysis-grid">
+          <article class="summary-card" :class="`is-${activeTone}`">
+            <div class="summary-card__head">
+              <span class="summary-label">{{ activeHealthLabel }}</span>
+              <span class="summary-tag">Scenario result</span>
+            </div>
+            <h2>{{ formatValue(activeScenario.result.net_impact) }}</h2>
+            <p>{{ summaryMessage }}</p>
+            <div class="progress-track" aria-label="Break-even progress">
+              <div class="progress-fill" :style="{ width: `${breakEvenProgress}%` }" />
+            </div>
+            <p class="hint">
+              Historical conversion {{ assumptions ? formatPercentage(assumptions.historical_conversion_rate) : '—' }} vs
+              break-even {{ formatPercentage(activeScenario.result.break_even_conversion_rate) }}
+            </p>
+          </article>
+
+          <article class="panel-card">
+            <header class="section-header">
+              <div>
+                <p class="eyebrow">Merchant assumptions</p>
+                <h3>{{ merchant?.name ?? 'Merchant profile' }}</h3>
+              </div>
+            </header>
+
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <span>Average order value</span>
+                <strong>{{ assumptions ? formatValue(assumptions.average_order_value) : '—' }}</strong>
+              </div>
+              <div class="metric-card">
+                <span>Gross margin</span>
+                <strong>{{ assumptions ? formatPercentage(assumptions.gross_margin_percentage) : '—' }}</strong>
+              </div>
+              <div class="metric-card">
+                <span>Historical conversion</span>
+                <strong>{{ assumptions ? formatPercentage(assumptions.historical_conversion_rate) : '—' }}</strong>
+              </div>
+              <div class="metric-card">
+                <span>Historical lift</span>
+                <strong>{{ assumptions ? formatPercentage(assumptions.historical_campaign_lift_percentage) : '—' }}</strong>
+              </div>
+            </div>
+
+            <p class="hint-card">
+              Historical data is used to estimate the incremental share of the campaign response. The field above shows total campaign conversion; the incremental orders are derived from the merchant's baseline activity.
+            </p>
+          </article>
+        </div>
+      </transition>
+
+      <div class="insight-grid">
         <div class="insight-card">
           <span>Incremental revenue</span>
           <strong>{{ activeScenario ? formatValue(activeScenario.result.incremental_revenue) : '—' }}</strong>
@@ -349,6 +407,26 @@ function setCustomConversionRate(event: Event) {
         <div class="insight-card">
           <span>ROI</span>
           <strong>{{ activeScenario && activeScenario.result.roi !== null ? `${activeScenario.result.roi.toFixed(2)}%` : '—' }}</strong>
+        </div>
+        <div class="insight-card">
+          <span>Break-even conversion</span>
+          <strong>{{ activeScenario ? formatPercentage(activeScenario.result.break_even_conversion_rate) : '—' }}</strong>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="compare-grid">
+          <div class="compare-card">
+            <span>Historical conversion</span>
+            <strong>{{ assumptions ? formatPercentage(assumptions.historical_conversion_rate) : '—' }}</strong>
+          </div>
+          <div class="compare-card compare-card--target">
+            <span>Break-even conversion</span>
+            <strong>{{ activeScenario ? formatPercentage(activeScenario.result.break_even_conversion_rate) : '—' }}</strong>
+          </div>
+        </div>
+        <div class="progress-track progress-track--compare">
+          <div class="progress-fill" :style="{ width: `${breakEvenProgress}%` }" />
         </div>
       </div>
 

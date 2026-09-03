@@ -64,6 +64,17 @@ export function useCampaignAdvisor() {
     selectedScenario.value = type;
   }
 
+  function setCustomConversionRate(value: number | null) {
+    state.customConversionRate = value === null ? null : Number(value.toFixed(2));
+  }
+
+  async function applyCustomScenario() {
+    selectedScenario.value = 'custom';
+    await analyze();
+    state.step = 'analysis';
+    state.customConversionRate = null;
+  }
+
   function reset() {
     state.step = 'merchant';
     state.analysis = null;
@@ -81,6 +92,8 @@ export function useCampaignAdvisor() {
     goToStep,
     analyze,
     selectScenario,
+    setCustomConversionRate,
+    applyCustomScenario,
     reset,
   };
 }

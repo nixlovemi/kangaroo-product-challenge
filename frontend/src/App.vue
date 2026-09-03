@@ -30,6 +30,7 @@ const campaignName = computed(() => state.campaignType === 'percentage_discount'
     @update:type="state.campaignType = $event"
     @update:discount="state.discountPercentage = $event"
     @update:multiplier="state.pointsMultiplier = $event"
-    @update:custom="state.customConversionRate = $event"
+    @update:custom="advisor.setCustomConversionRate"
+    @apply-custom="advisor.applyCustomScenario"
   />
 </template>
