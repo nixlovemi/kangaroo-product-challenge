@@ -64,6 +64,7 @@ abstract class AbstractCampaignSimulationStrategy implements CampaignSimulationS
             insight: $insight,
             fixedCampaignCost: $this->round($input->fixedCampaignCost),
             averageOrderValue: $this->round($input->averageOrderValue),
+            audienceSize: $input->audienceSize,
         );
     }
 

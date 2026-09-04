@@ -11,7 +11,7 @@ use App\Domain\Campaigns\DTOs\SimulationResultDTO;
 use App\Domain\Campaigns\Enums\ScenarioType;
 use App\Domain\Campaigns\Repositories\HistoricalDataRepository;
 
-final class CampaignSimulationService
+final class CampaignSimulationService implements CampaignSimulatorInterface
 {
     private const SCENARIO_RATE_PRECISION = 2;
 

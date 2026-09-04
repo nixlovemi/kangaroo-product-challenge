@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Domain\Campaigns\Exceptions\MerchantProfileNotFoundException;
 use App\Domain\Campaigns\Services\CampaignSimulationService;
+use App\Domain\Recommendations\Services\CampaignAdvisorService;
 use App\Http\Requests\SimulationRequest;
-use App\Http\Resources\CampaignScenarioAnalysisResource;
+use App\Http\Resources\CampaignAdviceResource;
 use App\Http\Resources\SimulationResultResource;
 use Illuminate\Http\JsonResponse;
 
@@ -13,6 +14,7 @@ final class CampaignSimulationController extends Controller
 {
     public function __construct(
         private readonly CampaignSimulationService $simulationService,
+        private readonly CampaignAdvisorService $advisorService,
     ) {
     }
 
@@ -35,12 +37,12 @@ final class CampaignSimulationController extends Controller
     public function scenarios(SimulationRequest $request): JsonResponse
     {
         try {
-            $analysis = new CampaignScenarioAnalysisResource(
-                $this->simulationService->simulateScenariosForMerchant($request->toCampaignDraft()),
+            $advice = new CampaignAdviceResource(
+                $this->advisorService->analyzeScenarios($request->toCampaignDraft()),
             );
 
             return $this->successResponse(
-                $analysis->resolve($request),
+                $advice->resolve($request),
                 'Campaign scenarios calculated.',
             );
         } catch (MerchantProfileNotFoundException $exception) {

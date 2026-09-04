@@ -48,5 +48,9 @@ final class CampaignServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(CampaignSimulationService::class);
+        $this->app->bind(
+            \App\Domain\Campaigns\Services\CampaignSimulatorInterface::class,
+            CampaignSimulationService::class,
+        );
     }
 }

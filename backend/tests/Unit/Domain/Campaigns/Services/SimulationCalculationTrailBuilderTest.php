@@ -92,6 +92,7 @@ final class SimulationCalculationTrailBuilderTest extends TestCase
             insight: new SimulationInsightDTO(0, 0, 'driver', 'action', 'orders'),
             fixedCampaignCost: 250,
             averageOrderValue: 112,
+            audienceSize: 1200,
         );
     }
 

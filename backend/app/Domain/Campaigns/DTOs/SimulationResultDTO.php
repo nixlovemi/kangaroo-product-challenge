@@ -23,6 +23,7 @@ final class SimulationResultDTO
         // from this DTO alone, for any strategy.
         public readonly float $fixedCampaignCost,
         public readonly float $averageOrderValue,
+        public readonly int $audienceSize,
     ) {
     }
 }

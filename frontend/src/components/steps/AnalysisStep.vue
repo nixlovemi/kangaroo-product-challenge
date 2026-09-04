@@ -7,6 +7,7 @@ const ScenarioSelector = defineAsyncComponent(() => import('../analysis/Scenario
 const ScenarioSummaryCard = defineAsyncComponent(() => import('../analysis/ScenarioSummaryCard.vue'));
 const MerchantAssumptionsAccordion = defineAsyncComponent(() => import('../analysis/MerchantAssumptionsAccordion.vue'));
 const CalculationTrailAccordion = defineAsyncComponent(() => import('../analysis/CalculationTrailAccordion.vue'));
+const RecommendationsAccordion = defineAsyncComponent(() => import('../analysis/RecommendationsAccordion.vue'));
 
 const props = defineProps<{
   analysis: ScenarioAnalysisData | null;
@@ -56,6 +57,8 @@ const customScenario = computed(() => scenarios.value.find((scenario) => scenari
     <MerchantAssumptionsAccordion :merchant="merchant" :assumptions="assumptions" />
 
     <CalculationTrailAccordion :scenario="props.currentScenario" :currency="currency" />
+
+    <RecommendationsAccordion :scenario="props.currentScenario" :currency="currency" />
 
     <p v-if="error" class="error-banner">{{ error }}</p>
 

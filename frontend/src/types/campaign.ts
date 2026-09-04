@@ -61,6 +61,34 @@ export interface CalculationStep {
   value_type: CalculationStepValueType;
 }
 
+export type RecommendationLever =
+  | 'discount_percentage'
+  | 'points_multiplier'
+  | 'fixed_campaign_cost'
+  | 'audience_size';
+
+export type RecommendationOutcome = 'actionable' | 'implausible' | 'infeasible';
+
+export type RecommendationValueType = 'percentage' | 'multiplier' | 'currency' | 'count';
+
+export interface Recommendation {
+  lever: RecommendationLever;
+  label: string;
+  value_type: RecommendationValueType;
+  outcome: RecommendationOutcome;
+  message: string;
+  current_value: number;
+  suggested_value: number | null;
+  projected_roi: number | null;
+}
+
+export interface RecommendationSet {
+  target_roi_percentage: number;
+  already_meets_target: boolean;
+  summary_message: string;
+  items: Recommendation[];
+}
+
 export interface SimulationMetrics {
   baseline_orders: number;
   campaign_orders: number;
@@ -75,6 +103,7 @@ export interface SimulationMetrics {
   break_even_achievable: boolean;
   fixed_campaign_cost: number;
   average_order_value: number;
+  audience_size: number;
   insight: SimulationInsight;
   calculation_steps: CalculationStep[];
 }
@@ -83,6 +112,7 @@ export interface ScenarioAnalysis {
   type: ScenarioType;
   campaign_conversion_rate: number;
   result: SimulationMetrics;
+  recommendations: RecommendationSet;
 }
 
 export interface ScenarioAnalysisData {

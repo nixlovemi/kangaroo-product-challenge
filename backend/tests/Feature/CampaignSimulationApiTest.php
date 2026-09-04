@@ -99,6 +99,57 @@ final class CampaignSimulationApiTest extends TestCase
             ]]]]]);
     }
 
+    public function test_each_scenario_carries_recommendations_for_reaching_the_roi_target(): void
+    {
+        $response = $this->withHeader('X-API-Key', 'test-api-key')->postJson('/api/v1/campaigns/simulate/scenarios', [
+            'merchant_id' => 202,
+            'audience_size' => 1200,
+            'fixed_campaign_cost' => 250,
+            'campaign_type' => 'percentage_discount',
+            'parameters' => ['discount_percentage' => 10],
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.scenarios.1.recommendations.target_roi_percentage', -5)
+            ->assertJsonPath('data.scenarios.1.recommendations.already_meets_target', false)
+            ->assertJsonStructure(['data' => ['scenarios' => [[
+                'recommendations' => [
+                    'target_roi_percentage',
+                    'already_meets_target',
+                    'summary_message',
+                    'items' => [[
+                        'lever',
+                        'label',
+                        'value_type',
+                        'outcome',
+                        'message',
+                        'current_value',
+                        'suggested_value',
+                        'projected_roi',
+                    ]],
+                ],
+            ]]]]);
+    }
+
+    public function test_it_never_suggests_a_discount_too_small_to_be_a_real_campaign(): void
+    {
+        // Merchant 202's 34% margin cannot carry a 10% discount: reaching the target would
+        // need a ~0.39% discount, which must be reported as a diagnosis, not a suggestion.
+        $response = $this->withHeader('X-API-Key', 'test-api-key')->postJson('/api/v1/campaigns/simulate/scenarios', [
+            'merchant_id' => 202,
+            'audience_size' => 1200,
+            'fixed_campaign_cost' => 250,
+            'campaign_type' => 'percentage_discount',
+            'parameters' => ['discount_percentage' => 10],
+        ]);
+
+        $items = $response->json('data.scenarios.1.recommendations.items');
+        $discount = collect($items)->firstWhere('lever', 'discount_percentage');
+
+        self::assertSame('implausible', $discount['outcome']);
+        self::assertNull($discount['suggested_value']);
+    }
+
     public function test_it_adds_a_custom_scenario_when_a_conversion_rate_is_provided(): void
     {
         $response = $this->withHeader('X-API-Key', 'test-api-key')->postJson('/api/v1/campaigns/simulate/scenarios', [

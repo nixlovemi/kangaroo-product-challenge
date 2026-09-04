@@ -22,6 +22,7 @@ function mockAnalysisResponse() {
         {
           type: 'conservative',
           campaign_conversion_rate: 5.81,
+          recommendations: { target_roi_percentage: -5, already_meets_target: false, summary_message: 'summary', items: [] },
           result: {
             baseline_orders: 48,
             campaign_orders: 58,
@@ -36,6 +37,7 @@ function mockAnalysisResponse() {
             break_even_achievable: true,
             fixed_campaign_cost: 250,
             average_order_value: 112,
+            audience_size: 1200,
             calculation_steps: [],
             insight: {
               break_even_incremental_orders: 15,
@@ -49,6 +51,7 @@ function mockAnalysisResponse() {
         {
           type: 'expected',
           campaign_conversion_rate: 6.82,
+          recommendations: { target_roi_percentage: -5, already_meets_target: false, summary_message: 'summary', items: [] },
           result: {
             baseline_orders: 48,
             campaign_orders: 68,
@@ -63,6 +66,7 @@ function mockAnalysisResponse() {
             break_even_achievable: true,
             fixed_campaign_cost: 250,
             average_order_value: 112,
+            audience_size: 1200,
             calculation_steps: [],
             insight: {
               break_even_incremental_orders: 15,
@@ -267,4 +271,8 @@ describe('useCampaignAdvisor', () => {
     expect(advisor.selectedScenario.value).toBe('expected');
   });
 });
+
+
+
+
 

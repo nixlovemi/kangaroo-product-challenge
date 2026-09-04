@@ -7,6 +7,7 @@ function buildScenario(overrides: Partial<ScenarioAnalysis['result']> = {}): Sce
   return {
     type: 'expected',
     campaign_conversion_rate: 6.82,
+    recommendations: { target_roi_percentage: -5, already_meets_target: false, summary_message: 'summary', items: [] },
     result: {
       baseline_orders: 36,
       campaign_orders: 48,
@@ -21,6 +22,7 @@ function buildScenario(overrides: Partial<ScenarioAnalysis['result']> = {}): Sce
       break_even_achievable: true,
       fixed_campaign_cost: 250,
       average_order_value: 112,
+      audience_size: 1200,
       calculation_steps: [],
       insight: {
         break_even_incremental_orders: 18,
@@ -72,4 +74,8 @@ describe('ScenarioSummaryCard', () => {
     expect(wrapper.emitted('adjust')).toHaveLength(1);
   });
 });
+
+
+
+
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from 'vue';
-import type { CampaignDraftSettings, CampaignType, MerchantAssumptions, MerchantInfo, MerchantOverviewData, ScenarioAnalysisData, ScenarioType, SimulationMetrics } from '../types/campaign';
+import type { CampaignDraftSettings, CampaignType, MerchantAssumptions, MerchantInfo, MerchantOverviewData, ScenarioAnalysis, ScenarioAnalysisData, ScenarioType } from '../types/campaign';
 import { formatPercentage } from '../formatters/campaignFormatters';
 
 const WizardHeader = defineAsyncComponent(() => import('./WizardHeader.vue'));
@@ -30,7 +30,7 @@ const props = defineProps<{
   state: CampaignState;
   analysis: ScenarioAnalysisData | null;
   selectedScenario: ScenarioType;
-  currentScenario: { type: ScenarioType; campaign_conversion_rate: number; result: SimulationMetrics } | null;
+  currentScenario: ScenarioAnalysis | null;
   merchant: MerchantInfo | null;
   assumptions: MerchantAssumptions | null;
   campaignName: string;
