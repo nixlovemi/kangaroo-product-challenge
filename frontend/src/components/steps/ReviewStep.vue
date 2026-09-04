@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { CampaignType, MerchantInfo, ScenarioAnalysis } from '../../types/campaign';
+import type { CampaignDraftSettings, MerchantInfo, ScenarioAnalysis } from '../../types/campaign';
 import { formatCurrency, formatInteger, formatPercentage } from '../../formatters/campaignFormatters';
 import HealthBadge from '../library/HealthBadge.vue';
 import WizardActions from '../library/WizardActions.vue';
 
 const props = defineProps<{
-  audienceSize: number;
-  fixedCampaignCost: number;
-  campaignType: CampaignType;
+  draft: CampaignDraftSettings;
   currency: string;
   campaignName: string;
   merchant: MerchantInfo | null;
@@ -42,9 +40,9 @@ function formatValue(value: number): string {
         </header>
         <ul class="summary-list">
           <li><span>Merchant</span><strong>{{ merchant?.name ?? '—' }}</strong></li>
-          <li><span>Audience</span><strong>{{ formatInteger(audienceSize) }}</strong></li>
-          <li><span>Fixed cost</span><strong>{{ formatValue(fixedCampaignCost) }}</strong></li>
-          <li><span>Campaign type</span><strong>{{ campaignType }}</strong></li>
+          <li><span>Audience</span><strong>{{ formatInteger(draft.audienceSize) }}</strong></li>
+          <li><span>Fixed cost</span><strong>{{ formatValue(draft.fixedCampaignCost) }}</strong></li>
+          <li><span>Campaign type</span><strong>{{ draft.campaignType }}</strong></li>
         </ul>
       </article>
 

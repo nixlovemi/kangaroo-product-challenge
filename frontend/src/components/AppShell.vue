@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from 'vue';
-import type { CampaignType, MerchantAssumptions, MerchantInfo, MerchantOverviewData, ScenarioAnalysisData, ScenarioType, SimulationMetrics } from '../types/campaign';
+import type { CampaignDraftSettings, CampaignType, MerchantAssumptions, MerchantInfo, MerchantOverviewData, ScenarioAnalysisData, ScenarioType, SimulationMetrics } from '../types/campaign';
 import { formatPercentage } from '../formatters/campaignFormatters';
 
 const WizardHeader = defineAsyncComponent(() => import('./WizardHeader.vue'));
@@ -73,6 +73,25 @@ function chooseMerchant(merchantId: number) {
   emit('update:merchant', merchantId);
   emit('go-to-step', 'campaign');
 }
+
+// Groups the Step 2 draft fields so CampaignDraftStep/ReviewStep take one prop
+// instead of five, translating a single update:draft back into the granular
+// emits the composable already expects.
+const draft = computed<CampaignDraftSettings>(() => ({
+  audienceSize: props.state.audienceSize,
+  fixedCampaignCost: props.state.fixedCampaignCost,
+  campaignType: props.state.campaignType,
+  discountPercentage: props.state.discountPercentage,
+  pointsMultiplier: props.state.pointsMultiplier,
+}));
+
+function updateDraft(value: CampaignDraftSettings) {
+  emit('update:audience', value.audienceSize);
+  emit('update:cost', value.fixedCampaignCost);
+  emit('update:type', value.campaignType);
+  emit('update:discount', value.discountPercentage);
+  emit('update:multiplier', value.pointsMultiplier);
+}
 </script>
 
 <template>
@@ -83,22 +102,14 @@ function chooseMerchant(merchantId: number) {
 
     <CampaignDraftStep
       v-else-if="props.state.step === 'campaign'"
-      :audience-size="props.state.audienceSize"
-      :fixed-campaign-cost="props.state.fixedCampaignCost"
-      :campaign-type="props.state.campaignType"
-      :discount-percentage="props.state.discountPercentage"
-      :points-multiplier="props.state.pointsMultiplier"
+      :draft="draft"
       :custom-conversion-rate="props.state.customConversionRate"
       :expected-conversion-rate="props.state.merchantOverview?.expected_conversion_rate ?? null"
       :loading="props.state.loading"
       :currency="currency"
       :campaign-name="props.campaignName"
       :summary-response-rate="summaryResponseRate"
-      @update:audience="emit('update:audience', $event)"
-      @update:cost="emit('update:cost', $event)"
-      @update:type="emit('update:type', $event)"
-      @update:discount="emit('update:discount', $event)"
-      @update:multiplier="emit('update:multiplier', $event)"
+      @update:draft="updateDraft"
       @update:custom="emit('update:custom', $event)"
       @back="emit('go-to-step', 'merchant')"
       @analyze="emit('analyze')"
@@ -122,9 +133,7 @@ function chooseMerchant(merchantId: number) {
 
     <ReviewStep
       v-else
-      :audience-size="props.state.audienceSize"
-      :fixed-campaign-cost="props.state.fixedCampaignCost"
-      :campaign-type="props.state.campaignType"
+      :draft="draft"
       :currency="currency"
       :campaign-name="props.campaignName"
       :merchant="props.merchant"

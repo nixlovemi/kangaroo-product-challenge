@@ -2,6 +2,18 @@ export type CampaignType = 'percentage_discount' | 'double_points';
 export type ScenarioType = 'conservative' | 'expected' | 'strong_response' | 'custom';
 export type HealthStatus = 'healthy' | 'caution' | 'risky';
 
+/**
+ * The campaign draft fields edited on Step 2, grouped so parent components can
+ * pass/update them as one unit instead of listing each field individually.
+ */
+export interface CampaignDraftSettings {
+  audienceSize: number;
+  fixedCampaignCost: number;
+  campaignType: CampaignType;
+  discountPercentage: number;
+  pointsMultiplier: number;
+}
+
 export interface PercentageDiscountParameters {
   discount_percentage: number;
 }
