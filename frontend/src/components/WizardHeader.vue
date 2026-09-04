@@ -12,7 +12,7 @@ defineProps<{
       <p class="eyebrow">Kangaroo Campaign Advisor</p>
       <h1>Campaign outcomes for merchants</h1>
       <p class="hero-copy">
-        This demo simulates two merchants with different buying patterns and uses their historical data to review the next campaign before launch.
+        This demo simulates two merchants with distinct buying patterns, applying their historical baselines to project how a new campaign might perform under different scenarios.
       </p>
     </div>
     <ol class="stepper">

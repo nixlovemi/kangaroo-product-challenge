@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import type { ScenarioAnalysis, ScenarioType } from '../../types/campaign';
 import { formatCurrency, formatPercentage, formatScenarioType } from '../../formatters/campaignFormatters';
+import { CONVERSION_RATE_EXPLANATION } from '../../content/campaignCopy';
 import SegmentedControl, { type SegmentedOption } from '../library/SegmentedControl.vue';
 import Modal from '../library/Modal.vue';
 
@@ -107,7 +108,7 @@ async function applyCustomScenario() {
           @input="setCustomConversionRate"
           placeholder="Enter a custom conversion"
         >
-        <small>This is the total campaign response for the scenario. The Campaign Advisor calculates the incremental orders from the merchant's historical data.</small>
+        <small>{{ CONVERSION_RATE_EXPLANATION }}</small>
       </label>
 
       <template #actions>

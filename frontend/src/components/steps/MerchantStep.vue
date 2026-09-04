@@ -8,8 +8,8 @@ const emit = defineEmits<{
   <section class="step-card">
     <div class="step-intro">
       <p class="eyebrow">Step 1</p>
-      <h2>Choose a merchant account</h2>
-      <p>Pick the merchant whose historical activity will shape the recommendation.</p>
+      <h2>Pick a merchant account</h2>
+      <p>Select the merchant whose historical data will serve as the benchmark for this scenario analysis.</p>
     </div>
     <div class="choice-grid">
       <button class="choice-card" type="button" @click="emit('choose-merchant', 101)">
