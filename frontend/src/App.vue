@@ -24,7 +24,7 @@ const campaignName = computed(() => state.campaignType === 'percentage_discount'
     @analyze="advisor.analyze"
     @select-scenario="(type) => { if (type) advisor.selectScenario(type); }"
     @reset="advisor.reset"
-    @update:merchant="state.merchantId = $event"
+    @update:merchant="advisor.selectMerchant"
     @update:audience="state.audienceSize = $event"
     @update:cost="state.fixedCampaignCost = $event"
     @update:type="state.campaignType = $event"

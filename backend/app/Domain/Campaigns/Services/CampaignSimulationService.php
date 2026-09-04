@@ -4,6 +4,7 @@ namespace App\Domain\Campaigns\Services;
 
 use App\Domain\Campaigns\DTOs\CampaignDraftDTO;
 use App\Domain\Campaigns\DTOs\CampaignScenarioAnalysisDTO;
+use App\Domain\Campaigns\DTOs\MerchantOverviewDTO;
 use App\Domain\Campaigns\DTOs\ScenarioSimulationResultDTO;
 use App\Domain\Campaigns\DTOs\SimulationInputDTO;
 use App\Domain\Campaigns\DTOs\SimulationResultDTO;
@@ -33,6 +34,21 @@ final class CampaignSimulationService
         $campaignConversionRate = $this->expectedCampaignConversionRate($draft, $profile);
 
         return $this->simulateWithProfile($draft, $profile, $campaignConversionRate);
+    }
+
+    /**
+     * Merchant profile plus the default (historical-lift-based) conversion rate a
+     * campaign would use before the merchant overrides it with a custom estimate.
+     */
+    public function getMerchantOverview(int $merchantId): MerchantOverviewDTO
+    {
+        $profile = $this->historicalDataRepository->getMerchantProfile($merchantId);
+        $expectedConversionRate = $this->calculateHistoricalCampaignConversionRate(
+            $profile->historicalConversionRate,
+            $profile->historicalCampaignLiftPercentage,
+        );
+
+        return new MerchantOverviewDTO($profile, round($expectedConversionRate, self::SCENARIO_RATE_PRECISION));
     }
 
     public function simulateScenariosForMerchant(CampaignDraftDTO $draft): CampaignScenarioAnalysisDTO

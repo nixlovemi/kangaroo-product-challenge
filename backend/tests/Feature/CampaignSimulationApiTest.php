@@ -40,6 +40,13 @@ final class CampaignSimulationApiTest extends TestCase
                 'roi',
                 'health_status',
                 'break_even_achievable',
+                'insight' => [
+                    'break_even_incremental_orders',
+                    'break_even_progress_percentage',
+                    'health_driver_message',
+                    'action_message',
+                    'orders_context_message',
+                ],
             ]]);
     }
 
@@ -73,13 +80,23 @@ final class CampaignSimulationApiTest extends TestCase
             ->assertJsonPath('message', 'Campaign scenarios calculated.')
             ->assertJsonPath('data.merchant.id', 101)
             ->assertJsonPath('data.assumptions.historical_campaign_lift_percentage', 42)
+            ->assertJsonPath('data.fixed_campaign_cost', 0)
             ->assertJsonCount(3, 'data.scenarios')
             ->assertJsonPath('data.scenarios.0.type', 'conservative')
             ->assertJsonPath('data.scenarios.0.campaign_conversion_rate', 5.81)
             ->assertJsonPath('data.scenarios.1.type', 'expected')
             ->assertJsonPath('data.scenarios.1.campaign_conversion_rate', 6.82)
             ->assertJsonPath('data.scenarios.2.type', 'strong_response')
-            ->assertJsonPath('data.scenarios.2.campaign_conversion_rate', 7.82);
+            ->assertJsonPath('data.scenarios.2.campaign_conversion_rate', 7.82)
+            ->assertJsonStructure(['data' => ['scenarios' => [['result' => [
+                'insight' => [
+                    'break_even_incremental_orders',
+                    'break_even_progress_percentage',
+                    'health_driver_message',
+                    'action_message',
+                    'orders_context_message',
+                ],
+            ]]]]]);
     }
 
     public function test_it_adds_a_custom_scenario_when_a_conversion_rate_is_provided(): void

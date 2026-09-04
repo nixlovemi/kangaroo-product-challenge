@@ -5,14 +5,57 @@ namespace Tests\Unit\Domain\Campaigns\Strategies;
 use App\Domain\Campaigns\DTOs\SimulationInputDTO;
 use App\Domain\Campaigns\DTOs\DoublePointsParametersDTO;
 use App\Domain\Campaigns\DTOs\PercentageDiscountParametersDTO;
+use App\Domain\Campaigns\DTOs\SimulationInsightDTO;
 use App\Domain\Campaigns\Enums\CampaignType;
 use App\Domain\Campaigns\Exceptions\InvalidCampaignParametersException;
 use App\Domain\Campaigns\Enums\HealthStatus;
+use App\Domain\Campaigns\Services\SimulationInsightCalculatorInterface;
 use App\Domain\Campaigns\Strategies\PercentageDiscountStrategy;
 use PHPUnit\Framework\TestCase;
 
 final class PercentageDiscountStrategyTest extends TestCase
 {
+    public function test_it_can_be_unit_tested_with_a_fake_insight_calculator(): void
+    {
+        $fakeInsight = new SimulationInsightDTO(
+            breakEvenIncrementalOrders: 0,
+            breakEvenProgressPercentage: 0,
+            healthDriverMessage: 'fake driver message',
+            actionMessage: 'fake action message',
+            ordersContextMessage: 'fake orders context',
+        );
+
+        $fakeCalculator = new class($fakeInsight) implements SimulationInsightCalculatorInterface {
+            public function __construct(private readonly SimulationInsightDTO $insight)
+            {
+            }
+
+            public function build(
+                int $audienceSize,
+                float $baselineOrders,
+                float $campaignOrders,
+                float $incrementalOrders,
+                float $campaignConversionRate,
+                float $breakEvenConversionRate,
+                HealthStatus $healthStatus,
+            ): SimulationInsightDTO {
+                return $this->insight;
+            }
+        };
+
+        $result = (new PercentageDiscountStrategy($fakeCalculator))->simulate(new SimulationInputDTO(
+            audienceSize: 1000,
+            averageOrderValue: 100,
+            grossMarginPercentage: 50,
+            historicalConversionRate: 5,
+            campaignConversionRate: 20,
+            fixedCampaignCost: 0,
+            parameters: new PercentageDiscountParametersDTO(10),
+        ));
+
+        self::assertSame($fakeInsight, $result->insight);
+    }
+
     public function test_it_rejects_parameters_from_another_campaign_type(): void
     {
         $this->expectException(InvalidCampaignParametersException::class);
@@ -48,6 +91,20 @@ final class PercentageDiscountStrategyTest extends TestCase
         self::assertSame(-196.0, $result->netImpact);
         self::assertSame(7.23, $result->breakEvenConversionRate);
         self::assertSame(HealthStatus::RISKY, $result->healthStatus);
+        self::assertSame(36.36, $result->insight->breakEvenIncrementalOrders);
+        self::assertSame(89.9, $result->insight->breakEvenProgressPercentage);
+        self::assertSame(
+            'Risky because the projected conversion (6.50%) is below the 7.23% needed to cover incentive and campaign costs.',
+            $result->insight->healthDriverMessage,
+        );
+        self::assertSame(
+            'Needs 9 more incremental orders (+0.73pp conversion) to break even.',
+            $result->insight->actionMessage,
+        );
+        self::assertSame(
+            '50 would order anyway · 78 total with this campaign',
+            $result->insight->ordersContextMessage,
+        );
     }
 
     public function test_it_marks_break_even_as_unachievable_when_discount_reaches_margin(): void

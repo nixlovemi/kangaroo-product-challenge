@@ -126,7 +126,6 @@ h3 {
 .hero-copy,
 .step-intro p,
 .hint-card,
-.summary-card p,
 .hint {
   color: #475569;
 }
@@ -178,6 +177,11 @@ h3 {
 
 .segmented-control--scenarios {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.scenario-selector {
+  display: grid;
+  gap: 24px;
 }
 
 .scenario-option {
@@ -305,10 +309,6 @@ h3 {
   font-size: 0.85rem;
 }
 
-.summary-card--full {
-  width: 100%;
-}
-
 .accordion {
   border: 1px solid #e2e8f0;
   border-radius: 22px;
@@ -348,7 +348,6 @@ h3 {
 
 .draft-grid,
 .review-grid,
-.insight-grid,
 .metrics-grid {
   display: grid;
   gap: 18px;
@@ -377,8 +376,6 @@ h3 {
 }
 
 .field span,
-.metric-card span,
-.insight-card span,
 .summary-list span {
   font-size: 0.85rem;
   color: #64748b;
@@ -394,9 +391,6 @@ h3 {
 }
 
 .hint-card,
-.metric-card,
-.insight-card,
-.summary-card,
 .panel-card,
 .choice-card,
 .scenario-card {
@@ -405,9 +399,7 @@ h3 {
   background: #fff;
 }
 
-.hint-card,
-.metric-card,
-.insight-card {
+.hint-card {
   padding: 16px;
   min-height: 96px;
 }
@@ -418,16 +410,6 @@ h3 {
   gap: 18px;
 }
 
-.summary-card {
-  padding: 24px;
-  display: grid;
-  gap: 14px;
-}
-
-.summary-card h2 {
-  font-size: 2.4rem;
-}
-
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -435,147 +417,6 @@ h3 {
   align-items: flex-start;
 }
 
-.summary-card__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.summary-tag {
-  font-size: 0.8rem;
-  color: #64748b;
-}
-
-.summary-subtitle {
-  color: #64748b;
-  font-size: 0.9rem;
-  margin-top: -6px;
-}
-
-.summary-driver {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 12px 14px;
-  font-size: 0.92rem;
-  color: #1e293b;
-}
-
-.summary-stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.summary-stat {
-  display: grid;
-  gap: 4px;
-}
-
-.summary-stat span {
-  color: #64748b;
-  font-size: 0.85rem;
-}
-
-.summary-stat strong {
-  font-size: 1.3rem;
-}
-
-.summary-stat small {
-  color: #94a3b8;
-  font-size: 0.78rem;
-}
-
-.summary-action {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  border-top: 1px dashed #e2e8f0;
-  padding-top: 14px;
-}
-
-.summary-action p {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #b45309;
-}
-
-.summary-action.is-positive p {
-  color: #15803d;
-}
-
-.summary-action__cta {
-  border: 1px solid #6366f1;
-  background: #eef2ff;
-  color: #4338ca;
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.summary-action__cta:hover {
-  background: #e0e7ff;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(4px);
-}
-
-.compare-grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.compare-card {
-  padding: 18px;
-  border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
-}
-
-.compare-card span {
-  color: #64748b;
-  font-size: 0.85rem;
-}
-
-.compare-card strong {
-  display: block;
-  font-size: 1.4rem;
-  margin-top: 6px;
-}
-
-.compare-card--target {
-  background: linear-gradient(180deg, #fff 0%, #eef2ff 100%);
-  border-color: rgba(79, 70, 229, 0.25);
-}
-
-.metrics-grid,
-.insight-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.metric-card strong,
-.insight-card strong,
-.summary-list strong {
-  display: block;
-  font-size: 1.15rem;
-  margin-top: 6px;
-}
 
 .scenario-list {
   display: grid;
@@ -602,6 +443,16 @@ h3 {
   gap: 6px;
 }
 
+.metrics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.summary-list strong {
+  display: block;
+  font-size: 1.15rem;
+  margin-top: 6px;
+}
+
 .scenario-type {
   color: #64748b;
   text-transform: capitalize;
@@ -619,10 +470,6 @@ h3 {
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #6366f1, #22c55e);
-}
-
-.progress-track--compare {
-  margin-top: 10px;
 }
 
 .actions-row {
@@ -690,10 +537,8 @@ h3 {
   .wizard-header,
   .choice-grid,
   .draft-grid,
-  .analysis-grid,
   .review-grid,
-  .metrics-grid,
-  .insight-grid {
+  .metrics-grid {
     grid-template-columns: 1fr;
   }
 

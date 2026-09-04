@@ -18,6 +18,7 @@ final class SimulationResultDTO
         public readonly ?float $roi,
         public readonly HealthStatus $healthStatus,
         public readonly bool $breakEvenAchievable,
+        public readonly SimulationInsightDTO $insight,
     ) {
     }
 }

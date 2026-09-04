@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue';
 import { CampaignSimulationClient } from '../api/campaignSimulationClient';
-import type { CampaignType, ScenarioAnalysisData, ScenarioType } from '../types/campaign';
+import type { CampaignType, MerchantOverviewData, ScenarioAnalysisData, ScenarioType } from '../types/campaign';
 
 type WizardStep = 'merchant' | 'campaign' | 'analysis' | 'review';
 
@@ -16,6 +16,7 @@ export function useCampaignAdvisor() {
     discountPercentage: 15,
     pointsMultiplier: 2,
     customConversionRate: null as number | null,
+    merchantOverview: null as MerchantOverviewData | null,
     analysis: null as ScenarioAnalysisData | null,
     loading: false,
     error: null as string | null,
@@ -31,6 +32,23 @@ export function useCampaignAdvisor() {
   );
   const merchant = computed(() => state.analysis?.merchant ?? null);
   const assumptions = computed(() => state.analysis?.assumptions ?? null);
+
+  async function loadMerchantOverview() {
+    try {
+      state.merchantOverview = await client.getMerchantOverview(state.merchantId);
+    } catch {
+      state.merchantOverview = null;
+    }
+  }
+
+  function selectMerchant(merchantId: number) {
+    state.merchantId = merchantId;
+    // Avoid flashing the previous merchant's default rate while the new one loads.
+    state.merchantOverview = null;
+    void loadMerchantOverview();
+  }
+
+  void loadMerchantOverview();
 
   function goToStep(step: WizardStep) {
     state.step = step;
@@ -51,11 +69,12 @@ export function useCampaignAdvisor() {
           : { points_multiplier: state.pointsMultiplier },
       };
 
-      console.log('Sending campaign analysis request with payload:', payload);
-
       try {
         state.analysis = await client.getScenarioAnalysis(payload);
         state.step = 'analysis';
+        // Step 2's "Estimated audience response" field and Step 3's scenario
+        // selection share the same value, so keep them in sync on every analysis.
+        selectedScenario.value = payload.campaign_conversion_rate !== null ? 'custom' : 'expected';
       } catch (error) {
         state.analysis = null;
         state.error = error instanceof Error ? error.message : 'The campaign could not be analyzed.';
@@ -96,6 +115,7 @@ export function useCampaignAdvisor() {
     merchant,
     assumptions,
     goToStep,
+    selectMerchant,
     analyze,
     selectScenario,
     setCustomConversionRate,

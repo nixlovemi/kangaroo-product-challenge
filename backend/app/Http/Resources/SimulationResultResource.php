@@ -23,6 +23,13 @@ final class SimulationResultResource extends JsonResource
             'roi' => $this->roi,
             'health_status' => $this->healthStatus->value,
             'break_even_achievable' => $this->breakEvenAchievable,
+            'insight' => [
+                'break_even_incremental_orders' => $this->insight->breakEvenIncrementalOrders,
+                'break_even_progress_percentage' => $this->insight->breakEvenProgressPercentage,
+                'health_driver_message' => $this->insight->healthDriverMessage,
+                'action_message' => $this->insight->actionMessage,
+                'orders_context_message' => $this->insight->ordersContextMessage,
+            ],
         ];
     }
 }

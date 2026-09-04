@@ -32,6 +32,14 @@ export interface MerchantAssumptions {
   historical_campaign_lift_percentage: number;
 }
 
+export interface SimulationInsight {
+  break_even_incremental_orders: number;
+  break_even_progress_percentage: number;
+  health_driver_message: string;
+  action_message: string;
+  orders_context_message: string;
+}
+
 export interface SimulationMetrics {
   baseline_orders: number;
   campaign_orders: number;
@@ -44,6 +52,7 @@ export interface SimulationMetrics {
   roi: number | null;
   health_status: HealthStatus;
   break_even_achievable: boolean;
+  insight: SimulationInsight;
 }
 
 export interface ScenarioAnalysis {
@@ -57,6 +66,12 @@ export interface ScenarioAnalysisData {
   assumptions: MerchantAssumptions;
   fixed_campaign_cost: number;
   scenarios: ScenarioAnalysis[];
+}
+
+export interface MerchantOverviewData {
+  merchant: MerchantInfo;
+  assumptions: MerchantAssumptions;
+  expected_conversion_rate: number;
 }
 
 export interface ApiEnvelope<T> {

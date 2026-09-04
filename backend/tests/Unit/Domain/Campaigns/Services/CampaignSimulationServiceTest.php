@@ -75,6 +75,18 @@ final class CampaignSimulationServiceTest extends TestCase
         self::assertSame(10.0, $result->incrementalOrders);
     }
 
+    public function test_it_returns_the_merchant_profile_with_its_expected_conversion_rate(): void
+    {
+        $factory = new CampaignSimulationStrategyFactory([
+            CampaignType::PERCENTAGE_DISCOUNT->value => new PercentageDiscountStrategy(),
+        ]);
+
+        $overview = $this->service($factory)->getMerchantOverview(101);
+
+        self::assertSame(101, $overview->merchantProfile->merchantId);
+        self::assertSame(6.0, $overview->expectedConversionRate);
+    }
+
     private function service(CampaignSimulationStrategyFactory $factory): CampaignSimulationService
     {
         return new CampaignSimulationService($factory, new class implements HistoricalDataRepository {

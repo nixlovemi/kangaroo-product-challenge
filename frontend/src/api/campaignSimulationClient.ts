@@ -1,5 +1,5 @@
 import { API_BASE_URL, API_KEY } from '../config/app';
-import type { ApiEnvelope, ScenarioAnalysisData, SimulationRequestBody } from '../types/campaign';
+import type { ApiEnvelope, MerchantOverviewData, ScenarioAnalysisData, SimulationRequestBody } from '../types/campaign';
 
 export class CampaignSimulationApiError extends Error {
   public readonly errors: Record<string, string[]>;
@@ -46,6 +46,20 @@ export class CampaignSimulationClient {
     });
 
     const payload = (await response.json()) as ApiEnvelope<ScenarioAnalysisData>;
+
+    if (!response.ok || !payload.success || !payload.data) {
+      throw new CampaignSimulationApiError(payload.message, payload.errors);
+    }
+
+    return payload.data;
+  }
+
+  public async getMerchantOverview(merchantId: number): Promise<MerchantOverviewData> {
+    const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/profile`, {
+      headers: { 'X-API-Key': API_KEY },
+    });
+
+    const payload = (await response.json()) as ApiEnvelope<MerchantOverviewData>;
 
     if (!response.ok || !payload.success || !payload.data) {
       throw new CampaignSimulationApiError(payload.message, payload.errors);

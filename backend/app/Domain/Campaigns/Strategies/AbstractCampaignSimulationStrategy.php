@@ -5,11 +5,18 @@ namespace App\Domain\Campaigns\Strategies;
 use App\Domain\Campaigns\DTOs\SimulationInputDTO;
 use App\Domain\Campaigns\DTOs\SimulationResultDTO;
 use App\Domain\Campaigns\Enums\HealthStatus;
+use App\Domain\Campaigns\Services\SimulationInsightCalculator;
+use App\Domain\Campaigns\Services\SimulationInsightCalculatorInterface;
 
 abstract class AbstractCampaignSimulationStrategy implements CampaignSimulationStrategy
 {
     protected const DECIMAL_PRECISION = 2;
     protected const HEALTHY_SAFETY_MULTIPLIER = 1.2;
+
+    public function __construct(
+        private readonly SimulationInsightCalculatorInterface $insightCalculator = new SimulationInsightCalculator(),
+    ) {
+    }
 
     protected function buildResult(
         SimulationInputDTO $input,
@@ -28,6 +35,19 @@ abstract class AbstractCampaignSimulationStrategy implements CampaignSimulationS
         $netImpact = $this->calculateNetImpact($incrementalContribution, $incentiveCost, $input->fixedCampaignCost);
         $campaignCost = $incentiveCost + $input->fixedCampaignCost;
         $roi = $campaignCost > 0 ? ($netImpact / $campaignCost) * 100 : null;
+        $healthStatus = $this->healthStatus($netImpact, $campaignConversionRate, $breakEvenConversionRate);
+        // Round once and reuse it everywhere below, so the insight text/numbers
+        // always agree with the break_even_conversion_rate exposed in the DTO.
+        $breakEvenConversionRatePercentage = $this->round($breakEvenConversionRate * 100);
+        $insight = $this->insightCalculator->build(
+            audienceSize: $input->audienceSize,
+            baselineOrders: $baselineOrders,
+            campaignOrders: $campaignOrders,
+            incrementalOrders: $incrementalOrders,
+            campaignConversionRate: $input->campaignConversionRate,
+            breakEvenConversionRate: $breakEvenConversionRatePercentage,
+            healthStatus: $healthStatus,
+        );
 
         return new SimulationResultDTO(
             baselineOrders: $this->round($baselineOrders),
@@ -37,10 +57,11 @@ abstract class AbstractCampaignSimulationStrategy implements CampaignSimulationS
             incentiveCost: $this->round($incentiveCost),
             incrementalContribution: $this->round($incrementalContribution),
             netImpact: $this->round($netImpact),
-            breakEvenConversionRate: $this->round($breakEvenConversionRate * 100),
+            breakEvenConversionRate: $breakEvenConversionRatePercentage,
             roi: $roi === null ? null : $this->round($roi),
-            healthStatus: $this->healthStatus($netImpact, $campaignConversionRate, $breakEvenConversionRate),
+            healthStatus: $healthStatus,
             breakEvenAchievable: $breakEvenAchievable,
+            insight: $insight,
         );
     }
 

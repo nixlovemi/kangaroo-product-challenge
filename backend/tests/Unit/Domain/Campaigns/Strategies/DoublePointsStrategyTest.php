@@ -35,6 +35,20 @@ final class DoublePointsStrategyTest extends TestCase
         self::assertSame(5.43, $result->breakEvenConversionRate);
         self::assertSame(525.0, $result->roi);
         self::assertSame(HealthStatus::HEALTHY, $result->healthStatus);
+        self::assertSame(4.3, $result->insight->breakEvenIncrementalOrders);
+        self::assertSame(100.0, $result->insight->breakEvenProgressPercentage);
+        self::assertSame(
+            'Healthy: projected conversion (10.00%) is comfortably above the 5.43% break-even threshold.',
+            $result->insight->healthDriverMessage,
+        );
+        self::assertSame(
+            'Already past break-even with room to spare — no changes needed to stay profitable.',
+            $result->insight->actionMessage,
+        );
+        self::assertSame(
+            '50 would order anyway · 100 total with this campaign',
+            $result->insight->ordersContextMessage,
+        );
     }
 
     public function test_it_does_not_add_incentive_cost_when_the_multiplier_is_one(): void

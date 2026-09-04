@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CampaignSimulationController;
+use App\Http\Controllers\MerchantProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->middleware(['throttle:60,1', 'api.key'])->group(function () {
+    Route::get('merchants/{merchant}/profile', [MerchantProfileController::class, 'show']);
     Route::post('campaigns/simulate', [CampaignSimulationController::class, 'simulate']);
     Route::post('campaigns/simulate/scenarios', [CampaignSimulationController::class, 'scenarios']);
 });
