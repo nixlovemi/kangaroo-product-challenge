@@ -34,6 +34,9 @@ function mockAnalysisResponse() {
             roi: -22.8,
             health_status: 'risky',
             break_even_achievable: true,
+            fixed_campaign_cost: 250,
+            average_order_value: 112,
+            calculation_steps: [],
             insight: {
               break_even_incremental_orders: 15,
               break_even_progress_percentage: 91.5,
@@ -58,6 +61,9 @@ function mockAnalysisResponse() {
             roi: 36.15,
             health_status: 'healthy',
             break_even_achievable: true,
+            fixed_campaign_cost: 250,
+            average_order_value: 112,
+            calculation_steps: [],
             insight: {
               break_even_incremental_orders: 15,
               break_even_progress_percentage: 107.4,
@@ -261,3 +267,4 @@ describe('useCampaignAdvisor', () => {
     expect(advisor.selectedScenario.value).toBe('expected');
   });
 });
+

@@ -19,6 +19,9 @@ function buildScenario(type: ScenarioAnalysis['type'], rate: number, netImpact: 
       roi: -41.98,
       health_status: 'risky',
       break_even_achievable: true,
+      fixed_campaign_cost: 250,
+      average_order_value: 112,
+      calculation_steps: [],
       insight: {
         break_even_incremental_orders: 18,
         break_even_progress_percentage: 89.9,
@@ -92,3 +95,4 @@ describe('ScenarioSelector', () => {
     expect(wrapper.emitted('update:custom')).toEqual([[7.5]]);
   });
 });
+

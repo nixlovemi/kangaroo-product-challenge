@@ -66,3 +66,4 @@ describe('SegmentedControl', () => {
     expect(wrapper.emitted('update:modelValue')).toBeUndefined();
   });
 });
+

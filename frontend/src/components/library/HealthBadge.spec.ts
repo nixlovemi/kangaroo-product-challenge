@@ -21,3 +21,4 @@ describe('HealthBadge', () => {
     expect(wrapper.classes()).toContain('is-warning');
   });
 });
+

@@ -6,8 +6,7 @@ import WizardActions from '../library/WizardActions.vue';
 const ScenarioSelector = defineAsyncComponent(() => import('../analysis/ScenarioSelector.vue'));
 const ScenarioSummaryCard = defineAsyncComponent(() => import('../analysis/ScenarioSummaryCard.vue'));
 const MerchantAssumptionsAccordion = defineAsyncComponent(() => import('../analysis/MerchantAssumptionsAccordion.vue'));
-const ScenarioInsightGrid = defineAsyncComponent(() => import('../analysis/ScenarioInsightGrid.vue'));
-const BreakEvenCompareCard = defineAsyncComponent(() => import('../analysis/BreakEvenCompareCard.vue'));
+const CalculationTrailAccordion = defineAsyncComponent(() => import('../analysis/CalculationTrailAccordion.vue'));
 
 const props = defineProps<{
   analysis: ScenarioAnalysisData | null;
@@ -56,9 +55,7 @@ const customScenario = computed(() => scenarios.value.find((scenario) => scenari
 
     <MerchantAssumptionsAccordion :merchant="merchant" :assumptions="assumptions" />
 
-    <ScenarioInsightGrid :scenario="props.currentScenario" :currency="currency" />
-
-    <BreakEvenCompareCard :assumptions="assumptions" :scenario="props.currentScenario" />
+    <CalculationTrailAccordion :scenario="props.currentScenario" :currency="currency" />
 
     <p v-if="error" class="error-banner">{{ error }}</p>
 

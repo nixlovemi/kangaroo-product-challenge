@@ -49,3 +49,4 @@ describe('Modal', () => {
     expect(wrapper.emitted('close')).toBeUndefined();
   });
 });
+

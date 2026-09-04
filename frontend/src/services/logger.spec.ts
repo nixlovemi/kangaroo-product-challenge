@@ -41,3 +41,4 @@ describe('logger', () => {
     expect(console.error).toHaveBeenCalledWith('boom');
   });
 });
+

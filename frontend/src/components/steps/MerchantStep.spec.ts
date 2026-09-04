@@ -19,3 +19,4 @@ describe('MerchantStep', () => {
     expect(wrapper.emitted('choose-merchant')).toEqual([[202]]);
   });
 });
+

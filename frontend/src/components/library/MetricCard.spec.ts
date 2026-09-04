@@ -23,8 +23,6 @@ describe('MetricCard', () => {
 
   it.each([
     ['metric', 'metric-card'],
-    ['insight', 'insight-card'],
-    ['compare', 'compare-card'],
     ['stat', 'summary-stat'],
   ] as const)('applies the CSS class for variant %s', (variant, expectedClass) => {
     const wrapper = mount(MetricCard, {
@@ -32,15 +30,6 @@ describe('MetricCard', () => {
     });
 
     expect(wrapper.classes()).toContain(expectedClass);
-  });
-
-  it('applies both classes for the compare-target variant', () => {
-    const wrapper = mount(MetricCard, {
-      props: { label: 'Break-even conversion', value: '6.35%', variant: 'compare-target' },
-    });
-
-    expect(wrapper.classes()).toContain('compare-card');
-    expect(wrapper.classes()).toContain('compare-card--target');
   });
 
   it('defaults to the metric variant when none is provided', () => {
@@ -51,3 +40,4 @@ describe('MetricCard', () => {
     expect(wrapper.classes()).toContain('metric-card');
   });
 });
+

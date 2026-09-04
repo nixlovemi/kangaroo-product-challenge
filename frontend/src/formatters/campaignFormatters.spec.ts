@@ -41,3 +41,4 @@ describe('campaignFormatters', () => {
     expect(healthStatusTone('risky')).toBe('danger');
   });
 });
+

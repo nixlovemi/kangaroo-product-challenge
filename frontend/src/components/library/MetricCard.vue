@@ -1,14 +1,13 @@
 <script setup lang="ts">
 /**
- * Generic label/value/hint card used across metric, insight, compare and summary-stat
- * blocks. The `variant` prop selects which existing global CSS class to apply so the
- * visual identity of each call site stays exactly the same after extraction.
+ * Generic label/value/hint card. The `variant` prop picks the visual treatment:
+ * `metric` for grid cards, `stat` for the borderless figures inside a summary card.
  */
 withDefaults(defineProps<{
   label: string;
   value: string;
   hint?: string;
-  variant?: 'metric' | 'insight' | 'compare' | 'compare-target' | 'stat';
+  variant?: 'metric' | 'stat';
 }>(), {
   hint: '',
   variant: 'metric',
@@ -16,9 +15,6 @@ withDefaults(defineProps<{
 
 const variantClassMap = {
   metric: 'metric-card',
-  insight: 'insight-card',
-  compare: 'compare-card',
-  'compare-target': 'compare-card compare-card--target',
   stat: 'summary-stat',
 } as const;
 </script>
@@ -32,28 +28,12 @@ const variantClassMap = {
 </template>
 
 <style scoped>
-.metric-card,
-.insight-card,
-.compare-card {
+.metric-card {
   border: 1px solid #e2e8f0;
   border-radius: 22px;
   background: #fff;
-}
-
-.metric-card,
-.insight-card {
   padding: 16px;
   min-height: 96px;
-}
-
-.compare-card {
-  padding: 18px;
-  border-radius: 18px;
-}
-
-.compare-card.compare-card--target {
-  background: linear-gradient(180deg, #fff 0%, #eef2ff 100%);
-  border-color: rgba(79, 70, 229, 0.25);
 }
 
 .summary-stat {
@@ -62,23 +42,14 @@ const variantClassMap = {
 }
 
 .metric-card span,
-.insight-card span,
-.compare-card span,
 .summary-stat span {
   font-size: 0.85rem;
   color: #64748b;
 }
 
-.metric-card strong,
-.insight-card strong {
+.metric-card strong {
   display: block;
   font-size: 1.15rem;
-  margin-top: 6px;
-}
-
-.compare-card strong {
-  display: block;
-  font-size: 1.4rem;
   margin-top: 6px;
 }
 

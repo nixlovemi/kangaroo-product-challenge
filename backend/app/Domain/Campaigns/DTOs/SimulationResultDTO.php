@@ -19,6 +19,10 @@ final class SimulationResultDTO
         public readonly HealthStatus $healthStatus,
         public readonly bool $breakEvenAchievable,
         public readonly SimulationInsightDTO $insight,
+        // Campaign inputs echoed back so the calculation trail can be rebuilt
+        // from this DTO alone, for any strategy.
+        public readonly float $fixedCampaignCost,
+        public readonly float $averageOrderValue,
     ) {
     }
 }

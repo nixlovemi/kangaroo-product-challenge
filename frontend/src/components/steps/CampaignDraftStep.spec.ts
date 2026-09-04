@@ -70,3 +70,4 @@ describe('CampaignDraftStep', () => {
     expect(wrapper.emitted('analyze')).toHaveLength(1);
   });
 });
+

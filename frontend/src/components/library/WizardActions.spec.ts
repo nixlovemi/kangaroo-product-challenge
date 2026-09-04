@@ -33,3 +33,4 @@ describe('WizardActions', () => {
     expect(wrapper.findAll('button')[1]!.classes()).toContain('secondary-button');
   });
 });
+

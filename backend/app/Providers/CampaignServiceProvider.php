@@ -8,6 +8,8 @@ use App\Domain\Campaigns\Services\CampaignSimulationStrategyFactory;
 use App\Domain\Campaigns\Strategies\PercentageDiscountStrategy;
 use App\Domain\Campaigns\Strategies\DoublePointsStrategy;
 use App\Domain\Campaigns\Repositories\HistoricalDataRepository;
+use App\Domain\Campaigns\Services\SimulationCalculationTrailBuilder;
+use App\Domain\Campaigns\Services\SimulationCalculationTrailBuilderInterface;
 use App\Domain\Campaigns\Services\SimulationInsightCalculator;
 use App\Domain\Campaigns\Services\SimulationInsightCalculatorInterface;
 use App\Infrastructure\Campaigns\Repositories\JsonHistoricalDataRepository;
@@ -19,6 +21,7 @@ final class CampaignServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(SimulationInsightCalculatorInterface::class, SimulationInsightCalculator::class);
+        $this->app->bind(SimulationCalculationTrailBuilderInterface::class, SimulationCalculationTrailBuilder::class);
 
         $this->app->singleton(JsonHistoricalDataRepository::class, function ($app) {
             return new JsonHistoricalDataRepository(

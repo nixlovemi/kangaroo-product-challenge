@@ -52,6 +52,15 @@ export interface SimulationInsight {
   orders_context_message: string;
 }
 
+export type CalculationStepValueType = 'count' | 'currency' | 'percentage';
+
+export interface CalculationStep {
+  label: string;
+  formula: string;
+  value: number;
+  value_type: CalculationStepValueType;
+}
+
 export interface SimulationMetrics {
   baseline_orders: number;
   campaign_orders: number;
@@ -64,7 +73,10 @@ export interface SimulationMetrics {
   roi: number | null;
   health_status: HealthStatus;
   break_even_achievable: boolean;
+  fixed_campaign_cost: number;
+  average_order_value: number;
   insight: SimulationInsight;
+  calculation_steps: CalculationStep[];
 }
 
 export interface ScenarioAnalysis {

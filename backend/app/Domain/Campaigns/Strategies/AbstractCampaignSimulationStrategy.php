@@ -62,6 +62,8 @@ abstract class AbstractCampaignSimulationStrategy implements CampaignSimulationS
             healthStatus: $healthStatus,
             breakEvenAchievable: $breakEvenAchievable,
             insight: $insight,
+            fixedCampaignCost: $this->round($input->fixedCampaignCost),
+            averageOrderValue: $this->round($input->averageOrderValue),
         );
     }
 
